@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Financeiro — Aplicativo de Controle Financeiro Pessoal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8; padding: 20px; display: flex; justify-content: center; }
+
+.app-shell { display: flex; flex-direction: column; width: 100%; max-width: 480px; height: 720px; background: var(--surface-0, #fff); border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border, #e2e8f0); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+/* Login / Cadastro */
+.screen { display: none; flex-direction: column; height: 100%; }
+.screen.active { display: flex; }
+
+.auth-screen { background: #fff; align-items: center; justify-content: center; padding: 2rem; overflow-y: auto; }
+.auth-logo { text-align: center; margin-bottom: 1.5rem; }
+.auth-logo-mark { width: 56px; height: 56px; background: #1baf7a; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.auth-logo-mark i { font-size: 28px; color: #fff; }
+.auth-title { font-size: 22px; font-weight: 500; color: #1e293b; }
+.auth-sub { font-size: 14px; color: #64748b; margin-top: 4px; }
+.auth-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 340px; }
+.field-group { margin-bottom: 1rem; }
+.field-group label { font-size: 13px; color: #475569; display: block; margin-bottom: 6px; font-weight: 500; }
+.field-group input { width: 100%; padding: 10px 12px; border: 0.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #fff; color: #1e293b; outline: none; }
+.field-group input:focus { border-color: #1baf7a; }
+.checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-size: 13px; color: #475569; }
+.checkbox-group input { cursor: pointer; width: 16px; height: 16px; accent-color: #1baf7a; }
+.btn-auth { width: 100%; padding: 11px; background: #1baf7a; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+.btn-auth:hover { background: #169966; }
+.auth-divider { border: 0.5px dashed #e2e8f0; margin: 1.5rem 0 1rem; }
+.auth-footer-text { text-align: center; font-size: 13px; color: #64748b; }
+.btn-toggle-auth { width: 100%; padding: 9px; background: none; border: 0.5px solid #cbd5e1; color: #475569; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+.btn-toggle-auth:hover { background: #f1f5f9; }
+.auth-err { color: #e24b4a; font-size: 12px; margin-bottom: 10px; text-align: center; display: none; }
+
+/* Top bar */
+.topbar { background: #f8fafc; border-bottom: 0.5px solid #e2e8f0; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 56px; flex-shrink: 0; }
+.topbar-left { display: flex; align-items: center; gap: 8px; }
+.topbar-logo { width: 32px; height: 32px; background: #1baf7a; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.topbar-logo i { font-size: 18px; color: #fff; }
+.topbar-title { font-size: 15px; font-weight: 600; color: #0f172a; }
+.user-badge { font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #475569; font-weight: 600; margin-left: 4px; }
+.topbar-selectors { display: flex; align-items: center; gap: 6px; }
+.topbar-selectors select { font-size: 13px; font-weight: 500; color: #0f172a; background: #fff; border: 0.5px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; cursor: pointer; outline: none; }
+.btn-new-mes { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: none; border: 0.5px solid #1baf7a; color: #1baf7a; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.btn-new-mes:hover { background: #e1f5ee; }
+.btn-logout { font-size: 16px; color: #64748b; background: none; border: none; cursor: pointer; display: flex; align-items: center; margin-left: 4px; }
+.btn-logout:hover { color: #334155; }
+
+/* Bottom nav */
+.bottom-nav { display: flex; background: #f8fafc; border-top: 0.5px solid #e2e8f0; flex-shrink: 0; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px 10px; cursor: pointer; gap: 3px; border: none; background: none; }
+.nav-item i { font-size: 20px; color: #64748b; }
+.nav-item span { font-size: 10px; color: #64748b; }
+.nav-item.active i, .nav-item.active span { color: #1baf7a; font-weight: 600; }
+
+/* Content area */
+.content { flex: 1; overflow-y: auto; padding: 0; background: #fff; }
+
+/* -------- TELA 1: CAPTAÇÃO -------- */
+.section-head { padding: 1rem 1rem 0.5rem; }
+.section-head h2 { font-size: 16px; font-weight: 500; color: #1e293b; }
+.section-head p { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+.receita-total-card { margin: 0.75rem 1rem; background: #0f6e56; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+.receita-total-card .label { font-size: 12px; color: rgba(255,255,255,0.7); }
+.receita-total-card .valor { font-size: 24px; font-weight: 500; color: #fff; }
+.receita-total-card .delta { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+.receitas-list { padding: 0 1rem 1rem; }
+.receitas-list h3 { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+.receita-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
+.receita-item .ri-name { font-size: 14px; color: #1e293b; }
+.receita-item .ri-val { font-size: 14px; font-weight: 500; color: #1baf7a; }
+.receita-item input[type=text] { border: none; background: transparent; font-size: 14px; color: #1e293b; width: 120px; outline: none; text-align: right; }
+.add-receita-row { display: flex; gap: 8px; margin-top: 10px; }
+.add-receita-row input { flex: 1; padding: 8px 10px; font-size: 13px; border: 0.5px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; min-width: 0; }
+.btn-add { padding: 8px 14px; background: #1baf7a; color: #fff; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+/* -------- TELA 2: ORÇAMENTO -------- */
+.orcamento-list { padding: 0 1rem 1rem; }
+.caixa-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.caixa-card .caixa-head { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+.caixa-head .tag { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+.caixa-head .meta { font-size: 13px; font-weight: 500; color: #1e293b; }
+.caixa-head .pct { font-size: 12px; color: #64748b; }
+.caixa-body { border-top: 0.5px solid #e2e8f0; }
+.caixa-row { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 13px; }
+.caixa-row .cr-name { color: #475569; }
+.caixa-row .cr-val { color: #1e293b; font-weight: 500; }
+.pct-slider { padding: 4px 14px 10px; }
+.pct-slider input[type=range] { width: 100%; }
+.pct-slider .pct-label { font-size: 11px; color: #64748b; text-align: right; display: block; margin-top: 2px; }
+
+/* -------- TELA 3: REGISTRO -------- */
+.desp-form { margin: 0 1rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 1rem; }
+.desp-form h3 { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.form-row select, .form-row input { padding: 8px 10px; font-size: 13px; border: 0.5px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; width: 100%; outline: none; }
+.btn-add-desp { width: 100%; padding: 10px; background: #2a78d6; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+.desp-lista { padding: 0 1rem 1rem; }
+.desp-lista h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.desp-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
+.desp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.desp-info { flex: 1; min-width: 0; }
+.desp-info .di-desc { font-size: 13px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desp-info .di-cat { font-size: 11px; color: #64748b; }
+.desp-val { font-size: 13px; font-weight: 500; color: #1e293b; flex-shrink: 0; }
+.desp-del { background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px; }
+.lbl-dono { font-size: 10px; font-weight: 600; padding: 1px 4px; border-radius: 4px; margin-left: 6px; display: inline-block; vertical-align: middle; }
+.lbl-dono.andre { background: #e0f2fe; color: #0369a1; }
+.lbl-dono.gessyca { background: #fce7f3; color: #be185d; }
+
+/* -------- TELA 4: CONTROLE -------- */
+.control-filter-tabs { display: flex; margin: 0 1rem 1rem; border: 0.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc; }
+.ctrl-tab-btn { flex: 1; padding: 8px; border: none; background: none; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer; }
+.ctrl-tab-btn.active { background: #fff; color: #1baf7a; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+.ctrl-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 1rem 1rem; }
+.ctrl-metric { background: #f1f5f9; border-radius: 8px; padding: 10px 12px; }
+.ctrl-metric .cm-label { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+.ctrl-metric .cm-val { font-size: 18px; font-weight: 500; color: #1e293b; }
+.ctrl-metric .cm-val.green { color: #1baf7a; }
+.ctrl-metric .cm-val.red { color: #e24b4a; }
+.termometro-list { padding: 0 1rem 1rem; }
+.termo-item { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; padding: 10px 14px; }
+.termo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.termo-top .ti-name { font-size: 13px; font-weight: 500; color: #1e293b; }
+.termo-top .ti-status { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.status-ok { background: #e1f5ee; color: #0f6e56; }
+.status-over { background: #fcebeb; color: #a32d2d; }
+.termo-bar-bg { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+.termo-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.termo-vals { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; }
+.termo-split-row { display: flex; gap: 12px; font-size: 10px; color: #64748b; margin-top: 4px; padding-top: 4px; border-top: 0.5px dashed #cbd5e1; }
+
+/* -------- TELA 5: PATRIMÔNIO (GRÁFICO) -------- */
+.patr-hero { margin: 0.75rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; }
+.patr-hero .ph-label { font-size: 12px; color: #64748b; }
+.patr-hero .ph-val { font-size: 26px; font-weight: 500; color: #1e293b; margin: 2px 0; }
+.patr-hero .ph-row { display: flex; gap: 1.5rem; margin-top: 8px; font-size: 12px; }
+.patr-hero .ph-row span { color: #64748b; }
+.patr-hero .ph-row strong { color: #1e293b; }
+
+.patr-chart-controls { display: flex; justify-content: space-between; align-items: center; margin: 0 1rem 10px; gap: 8px; }
+.patr-chart-controls select { font-size: 12px; padding: 4px 6px; border: 0.5px solid #cbd5e1; border-radius: 6px; background: #fff; outline: none; color: #1e293b; }
+.btn-chart-total { font-size: 11px; font-weight: 500; padding: 4px 10px; border: 0.5px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer; color: #475569; }
+.btn-chart-total.active { background: #0f6e56; color: #fff; border-color: #0f6e56; }
+
+.patr-visual-chart { display: flex; height: 100px; margin: 0 1rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 12px; align-items: flex-end; justify-content: space-around; gap: 6px; }
+.chart-column { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+.chart-bar-fill { width: 100%; max-width: 24px; background: #1baf7a; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s; }
+.chart-column-label { font-size: 9px; color: #64748b; margin-top: 4px; text-align: center; }
+.chart-column-val { font-size: 9px; font-weight: 500; color: #1e293b; margin-bottom: 2px; }
+
+.proj-list { padding: 0 1rem 1rem; }
+.proj-list h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.proj-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.proj-card .pc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.proj-card .pc-name { font-size: 14px; font-weight: 500; color: #1e293b; }
+.proj-card .pc-pct { font-size: 13px; font-weight: 500; }
+.proj-bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.proj-bar-fill { height: 100%; border-radius: 3px; }
+.proj-vals { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; }
+
+.ativos-list { padding: 0 1rem 1rem; }
+.ativos-list h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.ativo-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
+.ativo-item .ai-name { font-size: 13px; color: #1e293b; }
+.ativo-item .ai-sub { font-size: 11px; color: #64748b; }
+.ativo-item .ai-val { font-size: 13px; font-weight: 500; color: #1e293b; }
+.ativo-item .ai-rend { font-size: 11px; color: #1baf7a; }
+</style>
+</head>
+<body>
+
+<div class="app-shell" id="app">
+
+  <div class="screen auth-screen active" id="screen-login">
+    <div class="auth-logo">
+      <div class="auth-logo-mark"><i class="ti ti-report-money" aria-hidden="true"></i></div>
+      <div class="auth-title">Entrar</div>
+      <div class="auth-sub">Controle inteligente das suas 4 caixas</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-err" id="login-error-msg">E-mail ou senha incorretos!</div>
+      <div class="field-group">
+        <label for="inp-email">Email</label>
+        <input type="email" id="inp-email" placeholder="seu@email.com">
+      </div>
+      <div class="field-group">
+        <label for="inp-senha">Senha</label>
+        <input type="password" id="inp-senha" placeholder="••••••••">
+      </div>
+      <button class="btn-auth" id="btn-do-login">Entrar</button>
+      
+      <div class="auth-divider"></div>
+      <div class="auth-footer-text">Não possui conta?</div>
+      <button class="btn-toggle-auth" id="btn-go-to-register">Criar conta</button>
+    </div>
+  </div>
+
+  <div class="screen auth-screen" id="screen-register">
+    <div class="auth-logo">
+      <div class="auth-logo-mark"><i class="ti ti-report-money" aria-hidden="true"></i></div>
+      <div class="auth-title">Criar conta</div>
+      <div class="auth-sub">Cadastre-se para acessar o sistema</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-err" id="register-error-msg">Erro ao criar conta!</div>
+      <div class="field-group">
+        <label for="reg-cpf">CPF</label>
+        <input type="text" id="reg-cpf" placeholder="000.000.000-00" maxlength="11">
+      </div>
+      <div class="field-group">
+        <label for="reg-nome">Nome</label>
+        <input type="text" id="reg-nome" placeholder="Seu nome completo">
+      </div>
+      <div class="field-group">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" placeholder="seu@email.com">
+      </div>
+      <div class="field-group">
+        <label for="reg-senha">Senha</label>
+        <input type="password" id="reg-senha" placeholder="••••••••">
+      </div>
+      <div class="field-group">
+        <label for="reg-confirmar-senha">Confirmar senha</label>
+        <input type="password" id="reg-confirmar-senha" placeholder="••••••••">
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="reg-capsula">
+        <label for="reg-capsula">Não sou um robô</label>
+      </div>
+      <button class="btn-auth" id="btn-do-register">Criar conta</button>
+      
+      <div class="auth-divider"></div>
+      <div class="auth-footer-text">Já possui uma conta?</div>
+      <button class="btn-toggle-auth" id="btn-go-to-login">Voltar ao Login</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-main" style="flex-direction:column;">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo"><i class="ti ti-report-money" aria-hidden="true"></i></div>
+        <span class="topbar-title">Meu Financeiro</span>
+        <span class="user-badge" id="app-user-logged">...</span>
+      </div>
+      <div class="topbar-selectors">
+        <select id="ano-select">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+        </select>
+        
+        <select id="mes-select">
+          <option value="Janeiro">Janeiro</option>
+          <option value="Fevereiro">Fevereiro</option>
+          <option value="Março">Março</option>
+          <option value="Abril">Abril</option>
+          <option value="Maio" selected>Maio</option>
+          <option value="Junho">Junho</option>
+          <option value="Julho">Julho</option>
+          <option value="Agosto">Agosto</option>
+          <option value="Setembro">Setembro</option>
+          <option value="Outubro">Outubro</option>
+          <option value="Novembro">Novembro</option>
+          <option value="Dezembro">Dezembro</option>
+        </select>
+        
+        <button class="btn-new-mes" id="btn-trigger-new-mes" title="Criar ou herdar este período">
+          <i class="ti ti-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+      <button class="btn-logout" id="btn-trigger-logout"><i class="ti ti-logout" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="content" id="main-content">
+
+      <div id="tab-captacao" class="tab-content" style="display:block">
+        <div class="section-head">
+          <h2>Captação de receitas</h2>
+          <p>Cadastre todas as fontes de renda do mês</p>
+        </div>
+        <div class="receita-total-card">
+          <div>
+            <div class="label">Receita total — <span class="label-periodo">...</span></div>
+            <div class="valor" id="rt-valor">R$ 0</div>
+          </div>
+          <div style="text-align:right">
+            <i class="ti ti-trending-up" style="font-size:28px;color:rgba(255,255,255,0.6)" aria-hidden="true"></i>
+            <div class="delta" id="rt-delta">0 fontes ativas</div>
+          </div>
+        </div>
+        <div class="receitas-list">
+          <h3>Receitas fixas</h3>
+          <div id="list-receitas-fixas"></div>
+          <h3 style="margin-top:12px">Receitas variáveis</h3>
+          <div id="list-receitas-variaveis"></div>
+          <div class="add-receita-row" style="margin-top:12px">
+            <input id="nova-rec-nome" placeholder="Nome da receita" type="text">
+            <input id="nova-rec-val" placeholder="R$ 0,00" type="text" style="max-width:110px">
+            <select id="nova-rec-tipo" style="font-size:13px;border:0.5px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;padding:0 8px;max-width:90px">
+              <option value="fixa">Fixa</option>
+              <option value="variavel">Variável</option>
+            </select>
+            <button class="btn-add" id="btn-add-rec"><i class="ti ti-plus" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-orcamento" class="tab-content" style="display:none">
+        <div class="section-head">
+          <h2>Motor de orçamento</h2>
+          <p>Distribuição automática por percentuais</p>
+        </div>
+        <div class="orcamento-list" id="orcamento-list"></div>
+      </div>
+
+      <div id="tab-registro" class="tab-content" style="display:none">
+        <div class="section-head">
+          <h2>Registro de despesas</h2>
+          <p>Os lançamentos entram na carteira de quem está logado</p>
+        </div>
+        <div class="desp-form">
+          <h3 style="color:#1e293b">Nova movimentação por: <b id="lbl-form-dono" style="color:#1baf7a">...</b></h3>
+          <div class="form-row">
+            <input type="date" id="desp-data">
+            <select id="desp-cat">
+              <option value="">Categoria</option>
+              <option>Moradia</option><option>Alimentação</option><option>Transporte</option>
+              <option>Saúde</option><option>Contas fixas</option><option>Educação</option>
+              <option>Lazer</option><option>Compras</option><option>Financiamento carro</option>
+              <option>Reserva de Emergência</option><option>Investimentos</option>
+              <option>Patrimônio</option><option>Projetos</option><option>Despesas Extra</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <input type="text" id="desp-desc" placeholder="Descrição">
+            <input type="text" id="desp-val" placeholder="R$ 0,00">
+          </div>
+          <button class="btn-add-desp" id="btn-add-desp-submit">Registrar despesa</button>
+        </div>
+        <div class="desp-lista">
+          <h3>Lançamentos — <span class="label-periodo">...</span></h3>
+          <div id="list-despesas"></div>
+        </div>
+      </div>
+
+      <div id="tab-controle" class="tab-content" style="display:none">
+        <div class="section-head">
+          <h2>Termômetro financeiro</h2>
+          <p>Realizado vs. orçado em tempo real com visão individualizada</p>
+        </div>
+
+        <div class="control-filter-tabs">
+          <button class="ctrl-tab-btn active" id="btn-ctrl-gasto">🏷️ Gastos (Consumo)</button>
+          <button class="ctrl-tab-btn" id="btn-ctrl-inv">💰 Investimentos (Aportes)</button>
+        </div>
+
+        <div class="ctrl-summary">
+          <div class="ctrl-metric">
+            <div class="cm-label">Receita total</div>
+            <div class="cm-val" id="ctrl-receita">R$ 0</div>
+          </div>
+          <div class="ctrl-metric">
+            <div class="cm-label">Total gasto</div>
+            <div class="cm-val" id="ctrl-gasto">R$ 0</div>
+          </div>
+          <div class="ctrl-metric">
+            <div class="cm-label">Categorias OK</div>
+            <div class="cm-val green" id="ctrl-ok">—</div>
+          </div>
+          <div class="ctrl-metric">
+            <div class="cm-label">Estouradas</div>
+            <div class="cm-val red" id="ctrl-over">—</div>
+          </div>
+        </div>
+        <div class="termometro-list" id="termometro-list"></div>
+      </div>
+
+      <div id="tab-patrimonio" class="tab-content" style="display:none">
+        <div class="section-head">
+          <h2>Patrimônio e projetos</h2>
+          <p>Visão de longo prazo das 4 caixas</p>
+        </div>
+        <div class="patr-hero">
+          <div class="ph-label">Patrimônio líquido</div>
+          <div class="ph-val" id="patr-liq">R$ 0</div>
+          <div class="ph-row">
+            <div><span>Ativos </span><strong id="patr-ativos">R$ 0</strong></div>
+            <div><span>Passivos </span><strong id="patr-passivos" style="color:#e24b4a">R$ 0</strong></div>
+          </div>
+        </div>
+
+        <div class="patr-chart-controls">
+          <select id="patr-chart-date">
+            <option value="2030">Ano Projetado (2030)</option>
+            <option value="2029">Ano Projetado (2029)</option>
+            <option value="2028">Ano Projetado (2028)</option>
+            <option value="2027">Ano Projetado (2027)</option>
+            <option value="2026" selected>Ano Atual (2026)</option>
+            <option value="2025">Ano Anterior (2025)</option>
+            <option value="2024">Histórico (2024)</option>
+            <option value="2023">Histórico (2023)</option>
+          </select>
+          <button class="btn-chart-total" id="btn-chart-total-mode">Ver Total Geral</button>
+        </div>
+
+        <div class="patr-visual-chart" id="patr-bars-container"></div>
+
+        <div class="ativos-list">
+          <h3>Caixas</h3>
+          <div id="list-ativos"></div>
+        </div>
+        <div class="proj-list">
+          <h3>Projetos e metas</h3>
+          <div id="list-projetos"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav" id="bottom-navigation-bar">
+      <button class="nav-item active" data-tab="captacao" aria-label="Captação">
+        <i class="ti ti-wallet" aria-hidden="true"></i><span>Receitas</span>
+      </button>
+      <button class="nav-item" data-tab="orcamento" aria-label="Orçamento">
+        <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i><span>Orçamento</span>
+      </button>
+      <button class="nav-item" data-tab="registro" aria-label="Registro">
+        <i class="ti ti-plus-circle" aria-hidden="true"></i><span>Registro</span>
+      </button>
+      <button class="nav-item" data-tab="controle" aria-label="Controle">
+        <i class="ti ti-chart-bar" aria-hidden="true"></i><span>Controle</span>
+      </button>
+      <button class="nav-item" data-tab="patrimonio" aria-label="Patrimônio">
+        <i class="ti ti-building-bank" aria-hidden="true"></i><span>Patrimônio</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// CONFIGURAÇÕES E ESTADOS INICIAIS (PADRÕES)
+// ==========================================
+const fmt = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+const parseBr = s => parseFloat(String(s).replace(/[R$\s.]/g,'').replace(',','.')) || 0;
+
+const catColors = {
+  'Moradia':'#2a78d6','Alimentação':'#1baf7a','Transporte':'#eda100',
+  'Saúde':'#e34948','Contas fixas':'#4a3aa7','Educação':'#008300',
+  'Lazer':'#e87ba4','Compras':'#eb6834','Financiamento carro':'#a32d2d',
+  'Reserva de Emergência':'#0f6e56','Investimentos':'#085041',
+  'Patrimônio':'#0c447c','Projetos':'#533489','Despesas Extra':'#888780'
+};
+
+const caixasConfig = [
+  { nome:'Caixa 1 — Proteção', cor:'#0f6e56', cats:['Reserva de Emergência'], desc:'Reserva de emergência' },
+  { nome:'Caixa 2 — Acumulação', cor:'#2a78d6', cats:['Investimentos'], desc:'Investimentos financeiros' },
+  { nome:'Caixa 3 — Patrimônio', cor:'#4a3aa7', cats:['Patrimônio'], desc:'Construção patrimonial' },
+  { nome:'Caixa 4 — Projetos', cor:'#eda100', cats:['Projetos'], desc:'Projetos e compras' },
+  { nome:'Caixa 5 — Estilo de vida', cor:'#e34948', cats:['Moradia','Alimentação','Transporte','Saúde','Contas fixas','Educação','Financiamento carro','Lazer','Compras'], desc:'Essenciais e não essenciais' },
+];
+
+const ALLOWED_USERS = {
+  "16529117741": { nome: "André", email: "andre@meufinanceiro.com" },
+  "08683151417": { nome: "Gessyca", email: "gessyca@meufinanceiro.com" }
+};
+
+// ==========================================
+// ESTRUTURA CENTRAL DE ESTADOS (CAMADA DE DADOS SIMULANDO FIREBASE)
+// ==========================================
+let DB_STATE = {
+  currentUser: null, // Guardará {nome, email, cpf}
+  currentControlTab: "Gasto",
+  chartTotalActive: false,
+  anoSel: '2026',
+  mesSel: 'Maio',
+  
+  // Banco de Transações Dinâmicas estruturado por Ano -> Mês
+  dadosAnos: {},
+
+  // Estado dinâmico do Patrimônio e Projetos (Limpo de demonstração antiga)
+  patrimonioHistorico: {},
+  ativos: [],
+  projetos: []
+};
+
+// Inicializador de uma folha de período vazia com as regras padrão
+function criarEstruturaMesPadrao() {
+  return {
+    receitasFixas: [],
+    receitasVariaveis: [],
+    porcentagens: {
+      'Reserva de Emergência':9, 'Investimentos':8, 'Patrimônio':5, 'Projetos':5,
+      'Moradia':20, 'Alimentação':11, 'Transporte':4, 'Saúde':2,
+      'Contas fixas':5, 'Educação':3, 'Financiamento carro':8,
+      'Lazer':10, 'Compras':10
+    },
+    despesas: []
+  };
+}
+
+function getPeriodoAtual() {
+  const a = DB_STATE.anoSel;
+  const m = DB_STATE.mesSel;
+  if (!DB_STATE.dadosAnos[a]) DB_STATE.dadosAnos[a] = {};
+  if (!DB_STATE.dadosAnos[a][m]) {
+    DB_STATE.dadosAnos[a][m] = criarEstruturaMesPadrao();
+  }
+  return DB_STATE.dadosAnos[a][m];
+}
+
+// ==========================================
+// LOGICA DE REGRAS DE NEGÓCIO / CÁLCULOS
+// ==========================================
+function receitaTotal() {
+  const d = getPeriodoAtual();
+  return [...d.receitasFixas, ...d.receitasVariaveis].reduce((s,r)=>s+r.val,0);
+}
+
+function limite(cat) {
+  const d = getPeriodoAtual();
+  const pct = (d.porcentagens[cat]||0)/100;
+  return receitaTotal()*pct;
+}
+
+function realizado(cat) {
+  const d = getPeriodoAtual();
+  return d.despesas.filter(x=>x.cat===cat).reduce((s,x)=>s+x.val,0);
+}
+
+// ==========================================
+// GERENCIADOR DE TELAS E INTERAÇÕES (AUTENTICAÇÃO)
+// ==========================================
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+function handleLogin() {
+  const email = document.getElementById('inp-email').value.trim().toLowerCase();
+  const senha = document.getElementById('inp-senha').value;
+  const errEl = document.getElementById('login-error-msg');
+  
+  errEl.style.display = 'none';
+  
+  // Localiza usuário mapeado pelo CPF
+  let usuarioEncontrado = null;
+  for (let cpf in ALLOWED_USERS) {
+    if (ALLOWED_USERS[cpf].email === email) {
+      usuarioEncontrado = { cpf, ...ALLOWED_USERS[cpf] };
+      break;
+    }
+  }
+
+  // Autenticação mockada idêntica à original
+  if (usuarioEncontrado && senha === "123456") {
+    DB_STATE.currentUser = usuarioEncontrado;
+    document.getElementById('app-user-logged').textContent = usuarioEncontrado.nome;
+    document.getElementById('lbl-form-dono').textContent = usuarioEncontrado.nome;
+    
+    showScreen('screen-main');
+    renderAll();
+  } else {
+    errEl.style.display = 'block';
+  }
+}
+
+function handleRegister() {
+  const cpf = document.getElementById('reg-cpf').value.trim();
+  const nome = document.getElementById('reg-nome').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const senha = document.getElementById('reg-senha').value;
+  const confSenha = document.getElementById('reg-confirmar-senha').value;
+  const naoRobo = document.getElementById('reg-capsula').checked;
+  const errEl = document.getElementById('register-error-msg');
+
+  errEl.style.display = 'none';
+
+  if (!cpf || !nome || !email || !senha || !confSenha) {
+    errEl.textContent = "Preencha todos os campos!";
+    errEl.style.display = "block";
+    return;
+  }
+
+  if (senha !== confSenha) {
+    errEl.textContent = "As senhas não coincidem!";
+    errEl.style.display = "block";
+    return;
+  }
+
+  if (!naoRobo) {
+    errEl.textContent = "Confirme que você não é um robô!";
+    errEl.style.display = "block";
+    return;
+  }
+
+  // Validação Estrita de CPF de Acordo com a Regra Definida
+  if (!ALLOWED_USERS[cpf]) {
+    errEl.textContent = "Acesso Negado: CPF não autorizado para criação de conta.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  // Vincula ou valida compatibilidade de dados do casal pré-cadastrados
+  ALLOWED_USERS[cpf].nome = nome;
+  ALLOWED_USERS[cpf].email = email;
+
+  alert("Conta criada com sucesso! Você já pode realizar o login.");
+  showScreen('screen-login');
+}
+
+function handleLogout() {
+  DB_STATE.currentUser = null;
+  document.getElementById('inp-email').value = '';
+  document.getElementById('inp-senha').value = '';
+  showScreen('screen-login');
+}
+
+// ==========================================
+// MOTORES VISUAIS DE RENDERIZAÇÃO DE INTERFACE
+// ==========================================
+function switchTab(tabName, clickedBtn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  
+  document.getElementById('tab-' + tabName).style.display = 'block';
+  clickedBtn.classList.add('active');
+  renderTab(tabName);
+}
+
+function renderAll() {
+  document.querySelectorAll('.label-periodo').forEach(el => {
+    el.textContent = DB_STATE.mesSel + '/' + DB_STATE.anoSel;
+  });
+  
+  const activeBtn = document.querySelector('.nav-item.active');
+  if (activeBtn) {
+    renderTab(activeBtn.dataset.tab);
+  } else {
+    renderTab('captacao');
+  }
+}
+
+function renderTab(tab) {
+  if (tab === 'captacao') renderCaptacao();
+  if (tab === 'orcamento') renderOrcamento();
+  if (tab === 'registro') renderRegistro();
+  if (tab === 'controle') renderControle();
+  if (tab === 'patrimonio') renderPatrimonio();
+}
+
+function trocarPeriodo() {
+  DB_STATE.anoSel = document.getElementById('ano-select').value;
+  DB_STATE.mesSel = document.getElementById('mes-select').value;
+  
+  const hoje = new Date();
+  const mesFormatado = String(hoje.getMonth() + 1).padStart(2, '0');
+  const diaFormatado = String(hoje.getDate()).padStart(2, '0');
+  document.getElementById('desp-data').value = `${DB_STATE.anoSel}-${mesFormatado}-${diaFormatado}`;
+  
+  renderAll();
+}
+
+function inicializarNovoPeriodo() {
+  const ano = DB_STATE.anoSel;
+  const mes = DB_STATE.mesSel;
+  
+  if (DB_STATE.dadosAnos[ano] && DB_STATE.dadosAnos[ano][mes]) {
+    alert('Este período (' + mes + '/' + ano + ') já possui dados ou foi inicializado.');
+    return;
+  }
+
+  // Tenta herdar a configuração do último mês configurado, senão cria uma nova padrão
+  let baseOriginal = null;
+  const anosDisponiveis = Object.keys(DB_STATE.dadosAnos);
+  if (anosDisponiveis.length > 0) {
+    const ultimoAno = anosDisponiveis[anosDisponiveis.length - 1];
+    const mesesDisponiveis = Object.keys(DB_STATE.dadosAnos[ultimoAno]);
+    if (mesesDisponiveis.length > 0) {
+      const ultimoMes = mesesDisponiveis[mesesDisponiveis.length - 1];
+      baseOriginal = DB_STATE.dadosAnos[ultimoAno][ultimoMes];
+    }
+  }
+
+  if (!DB_STATE.dadosAnos[ano]) DB_STATE.dadosAnos[ano] = {};
+  
+  DB_STATE.dadosAnos[ano][mes] = {
+    receitasFixas: baseOriginal ? JSON.parse(JSON.stringify(baseOriginal.receitasFixas)) : [],
+    receitasVariaveis: [],
+    porcentagens: baseOriginal ? JSON.parse(JSON.stringify(baseOriginal.porcentagens)) : criarEstruturaMesPadrao().porcentagens,
+    despesas: []
+  };
+
+  alert('Período ' + mes + '/' + ano + ' preparado com sucesso! Suas receitas fixas e metas de percentuais foram herdadas.');
+  renderAll();
+}
+
+// --- RENDER DA TELA 1: CAPTAÇÃO ---
+function renderCaptacao() {
+  const d = getPeriodoAtual();
+  const total = receitaTotal();
+  document.getElementById('rt-valor').textContent = fmt(total);
+  const nf = [...d.receitasFixas,...d.receitasVariaveis].filter(r=>r.val>0).length;
+  document.getElementById('rt-delta').textContent = nf + ' fonte' + (nf!==1?'s':'') + ' ativas';
+
+  function renderLista(id, arr, tipo) {
+    const el = document.getElementById(id);
+    el.innerHTML = arr.length === 0 ? `<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma receita ${tipo} cadastrada.</p>` : '';
+    arr.forEach((r, i) => {
+      const div = document.createElement('div');
+      div.className = 'receita-item';
+      div.innerHTML = `<span class="ri-name">${r.nome}</span>
+        <input type="text" value="${fmt(r.val)}" data-idx="${i}" data-tipo="${tipo}" class="input-receita-dinamico" style="max-width:110px;text-align:right;font-weight:500;color:#1baf7a">
+        <button data-idx="${i}" data-tipo="${tipo}" class="btn-del-receita-dinamico" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:15px;margin-left:4px"><i class='ti ti-x'></i></button>`;
+      el.appendChild(div);
+    });
+  }
+  renderLista('list-receitas-fixas', d.receitasFixas, 'fixa');
+  renderLista('list-receitas-variaveis', d.receitasVariaveis, 'variavel');
+}
+
+function addReceita() {
+  const nome = document.getElementById('nova-rec-nome').value.trim();
+  const val = parseBr(document.getElementById('nova-rec-val').value);
+  const tipo = document.getElementById('nova-rec-tipo').value;
+  if (!nome || !val) return;
+  const d = getPeriodoAtual();
+  if (tipo === 'fixa') d.receitasFixas.push({nome,val});
+  else d.receitasVariaveis.push({nome,val});
+  document.getElementById('nova-rec-nome').value='';
+  document.getElementById('nova-rec-val').value='';
+  renderCaptacao();
+}
+
+// --- RENDER DA TELA 2: ORÇAMENTO ---
+function renderOrcamento() {
+  const d = getPeriodoAtual();
+  const total = receitaTotal();
+  const el = document.getElementById('orcamento-list');
+  el.innerHTML = '';
+
+  caixasConfig.forEach(cx => {
+    const totalPct = cx.cats.reduce((s,c)=>s+(d.porcentagens[c]||0),0);
+    const totalVal = total * totalPct/100;
+
+    const card = document.createElement('div');
+    card.className = 'caixa-card';
+    let rows = cx.cats.map(cat => {
+      const pct = d.porcentagens[cat]||0;
+      const val = total * pct/100;
+      return `<div class="caixa-row">
+        <span class="cr-name">${cat}</span>
+        <span class="cr-val">${fmt(val)} <small style="color:#64748b;font-weight:400">(${pct}%)</small></span>
+      </div>
+      <div class="pct-slider">
+        <input type="range" min="0" max="40" step="1" value="${pct}" data-cat="${cat}" class="slider-orcamento-dinamico" style="accent-color:${cx.cor}">
+        <span class="pct-label">${pct}% → ${fmt(val)}</span>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="caixa-head">
+        <div>
+          <span class="tag" style="background:${cx.cor}22;color:${cx.cor}">${cx.nome}</span>
+        </div>
+        <div style="text-align:right">
+          <div class="meta">${fmt(totalVal)}</div>
+          <div class="pct">${totalPct}% da receita</div>
+        </div>
+      </div>
+      <div class="caixa-body">${rows}</div>`;
+    el.appendChild(card);
+  });
+}
+
+// --- RENDER DA TELA 3: REGISTRO ---
+function renderRegistro() {
+  const d = getPeriodoAtual();
+  const el = document.getElementById('list-despesas');
+  el.innerHTML = '';
+  if (!d.despesas.length) {
+    el.innerHTML = '<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma despesa registrada neste período.</p>';
+    return;
+  }
+  
+  [...d.despesas].reverse().forEach((dep, ri) => {
+    const i = d.despesas.length - 1 - ri;
+    const cor = catColors[dep.cat] || '#888';
+    const div = document.createElement('div');
+    div.className = 'desp-item';
+    
+    const donoReal = dep.dono || 'André';
+    const classeDono = donoReal.toLowerCase().includes('andre') || donoReal === 'André' ? 'andre' : 'gessyca';
+    
+    div.innerHTML = `<div class="desp-dot" style="background:${cor}"></div>
+      <div class="desp-info">
+        <div class="di-desc">${dep.desc||dep.cat} <span class="lbl-dono ${classeDono}">${donoReal}</span></div>
+        <div class="di-cat">${dep.cat} ${dep.data?'· '+dep.data.split('-').reverse().slice(0,2).join('/'):''}</div>
+      </div>
+      <span class="desp-val">− ${fmt(dep.val)}</span>
+      <button class="desp-del btn-del-despesa-dinamico" data-idx="${i}"><i class="ti ti-trash" aria-hidden="true"></i></button>`;
+    el.appendChild(div);
+  });
+}
+
+function addDespesa() {
+  const data = document.getElementById('desp-data').value;
+  const cat = document.getElementById('desp-cat').value;
+  const desc = document.getElementById('desp-desc').value.trim();
+  const val = parseBr(document.getElementById('desp-val').value);
+  if (!cat || !val) return;
+  
+  getPeriodoAtual().despesas.push({
+    data, 
+    cat, 
+    desc: desc || cat, 
+    val, 
+    dono: DB_STATE.currentUser ? DB_STATE.currentUser.nome : "André"
+  });
+  
+  document.getElementById('desp-desc').value = '';
+  document.getElementById('desp-val').value = '';
+  renderRegistro();
+}
+
+// --- RENDER DA TELA 4: CONTROLE ---
+function toggleControlFilter(type) {
+  DB_STATE.currentControlTab = type;
+  document.getElementById('btn-ctrl-gasto').classList.toggle('active', type === 'Gasto');
+  document.getElementById('btn-ctrl-inv').classList.toggle('active', type === 'Investimento');
+  renderControle();
+}
+
+function renderControle() {
+  const d = getPeriodoAtual();
+  const total = receitaTotal();
+  
+  const gastTotalGeral = d.despesas.reduce((s,x)=>s+x.val,0);
+  document.getElementById('ctrl-receita').textContent = fmt(total);
+  document.getElementById('ctrl-gasto').textContent = fmt(gastTotalGeral);
+
+  const cats = Object.keys(d.porcentagens);
+  let ok=0, over=0;
+  cats.forEach(c => { if(d.porcentagens[c]>0){ const lim=limite(c); const real=realizado(c); if(real>lim) over++; else ok++; } });
+  document.getElementById('ctrl-ok').textContent = ok;
+  document.getElementById('ctrl-over').textContent = over;
+
+  const el = document.getElementById('termometro-list');
+  el.innerHTML = '';
+  
+  cats.forEach(cat => {
+    const pct = d.porcentagens[cat]||0;
+    if (pct===0) return;
+    
+    const ehInvestimento = (cat === 'Reserva de Emergência' || cat === 'Investimentos' || cat === 'Patrimônio' || cat === 'Projetos');
+    const tipoCategoria = ehInvestimento ? 'Investimento' : 'Gasto';
+    
+    if (tipoCategoria !== DB_STATE.currentControlTab) return;
+
+    const lim = limite(cat);
+    const realTotal = realizado(cat);
+    
+    const realAndre = d.despesas.filter(x => x.cat === cat && (x.dono === 'André' || x.dono === 'andre')).reduce((s,x)=>s+x.val,0);
+    const realGessyca = d.despesas.filter(x => x.cat === cat && (x.dono === 'Gessyca' || x.dono === 'gessyca')).reduce((s,x)=>s+x.val,0);
+    
+    const saldo = lim - realTotal;
+    const pctBar = lim > 0 ? Math.min(100, realTotal/lim*100) : 0;
+    const isOver = saldo < 0;
+    const cor = isOver ? '#e24b4a' : (catColors[cat]||'#1baf7a');
+
+    const item = document.createElement('div');
+    item.className = 'termo-item';
+    item.innerHTML = `
+      <div class="termo-top">
+        <span class="ti-name">${cat}</span>
+        <span class="ti-status ${isOver?'status-over':'status-ok'}">${isOver?'🔴 Estourou':'🟢 OK'}</span>
+      </div>
+      <div class="termo-bar-bg">
+        <div class="termo-bar-fill" style="width:${pctBar.toFixed(1)}%;background:${cor}"></div>
+      </div>
+      <div class="termo-vals">
+        <span>Casal: <b>${fmt(realTotal)}</b></span>
+        <span>Limite: ${fmt(lim)}</span>
+        <span style="color:${isOver?'#e24b4a':'#1baf7a'};font-weight:500">
+          ${isOver ? '− ' + fmt(Math.abs(saldo)) : '+ ' + fmt(saldo)}
+        </span>
+      </div>
+      <div class="termo-split-row">
+        <span>👨 André: <b>${fmt(realAndre)}</b></span>
+        <span>👩 Gessyca: <b>${fmt(realGessyca)}</b></span>
+      </div>`;
+    el.appendChild(item);
+  });
+}
+
+// --- RENDER DA TELA 5: PATRIMÔNIO (MANTIDO DINÂMICO E LIMPO) ---
+function toggleChartTotal(active) {
+  DB_STATE.chartTotalActive = active;
+  document.getElementById('btn-chart-total-mode').classList.toggle('active', active);
+  renderPatrimonioChart();
+}
+
+function renderPatrimonioChart() {
+  const container = document.getElementById('patr-bars-container');
+  container.innerHTML = '';
+  
+  const ano = document.getElementById('patr-chart-date').value;
+  let pontos = DB_STATE.patrimonioHistorico[ano] || [];
+  
+  if (DB_STATE.chartTotalActive) {
+    // Caso esteja ativo visualiza os totais gerais (Limpos e prontos para entrada)
+    pontos = [ 
+      {m: "Hist. 24", v: 0}, {m: "Hist. 25", v: 0}, {m: "Atual 26", v: 0}, {m: "Proj. 28", v: 0}, {m: "Proj. 30", v: 0} 
+    ];
+  }
+  
+  const maximo = Math.max(...pontos.map(p=>p.v), 1);
+  
+  pontos.forEach(p => {
+    const alturaPct = (p.v / maximo) * 100;
+    const col = document.createElement('div');
+    col.className = 'chart-column';
+    col.style.cursor = DB_STATE.chartTotalActive ? 'pointer' : 'default';
+    
+    const corBarra = DB_STATE.chartTotalActive && p.m.includes("Proj") ? "#0f6e56" : "#1baf7a";
+    
+    col.innerHTML = `
+      <div class="chart-column-val">${Math.round(p.v/1000)}k</div>
+      <div class="chart-bar-fill" style="height:${alturaPct}%; background:${corBarra};"></div>
+      <div class="chart-column-label">${p.m}</div>
+    `;
+    
+    if(DB_STATE.chartTotalActive) {
+      col.addEventListener('click', () => toggleChartTotal(false));
+    }
+    
+    container.appendChild(col);
+  });
+
+  if (pontos.length === 0) {
+    container.innerHTML = '<p style="font-size:12px;color:#64748b;align-self:center;margin:auto">Nenhum dado patrimonial cadastrado para este período.</p>';
+  }
+}
+
+function renderPatrimonio() {
+  renderPatrimonioChart();
+
+  // Cálculo Dinâmico de Ativos e Passivos com Base no Array da State Central
+  const totalAtivos = DB_STATE.ativos.reduce((s,a) => s+a.val, 0);
+  const totalPassivos = 0; // Prontificado para futuras implementações de dívidas/cartões
+  const patrimonioLiquido = totalAtivos - totalPassivos;
+
+  document.getElementById('patr-liq').textContent = fmt(patrimonioLiquido);
+  document.getElementById('patr-ativos').textContent = fmt(totalAtivos);
+  document.getElementById('patr-passivos').textContent = fmt(totalPassivos);
+
+  const atEl = document.getElementById('list-ativos');
+  atEl.innerHTML = DB_STATE.ativos.length === 0 ? '<p style="font-size:13px;color:#64748b;padding:8px 14px">Nenhuma caixa patrimonial criada.</p>' : '';
+  
+  DB_STATE.ativos.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'ativo-item';
+    div.innerHTML = `<div>
+      <div class="ai-name" style="display:flex;align-items:center;gap:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${a.cor};flex-shrink:0"></span>${a.nome}</div>
+      <div class="ai-sub">${a.sub}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="ai-val">${fmt(a.val)}</div>
+      <div class="ai-rend">${a.rend}</div>
+    </div>`;
+    atEl.appendChild(div);
+  });
+
+  const prEl = document.getElementById('list-projetos');
+  prEl.innerHTML = DB_STATE.projetos.length === 0 ? '<p style="font-size:13px;color:#64748b;padding:8px 14px">Nenhum projeto ou meta listado.</p>' : '';
+  
+  DB_STATE.projetos.forEach(p => {
+    const pct = Math.min(100,(p.atual/p.meta*100));
+    const div = document.createElement('div');
+    div.className = 'proj-card';
+    div.innerHTML = `
+      <div class="pc-head">
+        <span class="pc-name">${p.nome}</span>
+        <span class="pc-pct" style="color:${p.cor}">${pct.toFixed(1)}%</span>
+      </div>
+      <div class="proj-bar-bg">
+        <div class="proj-bar-fill" style="width:${pct.toFixed(1)}%;background:${p.cor}"></div>
+      </div>
+      <div class="proj-vals">
+        <span>${fmt(p.atual)} acumulado</span>
+        <span>Meta: ${fmt(p.meta)}</span>
+      </div>`;
+    prEl.appendChild(div);
+  });
+}
+
+// ==========================================
+// CENTRAL DE MAPEAMENTO DE EVENTOS (MELHORIA ADAPTATIVA)
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  // Eventos de Autenticação / Navegação de Telas
+  document.getElementById('btn-do-login').addEventListener('click', handleLogin);
+  document.getElementById('btn-do-register').addEventListener('click', handleRegister);
+  document.getElementById('btn-go-to-register').addEventListener('click', () => {
+    document.getElementById('login-error-msg').style.display = 'none';
+    showScreen('screen-register');
+  });
+  document.getElementById('btn-go-to-login').addEventListener('click', () => {
+    document.getElementById('register-error-msg').style.display = 'none';
+    showScreen('screen-login');
+  });
+  document.getElementById('btn-trigger-logout').addEventListener('click', handleLogout);
+
+  // Seletores Globais de Período
+  document.getElementById('ano-select').addEventListener('change', trocarPeriodo);
+  document.getElementById('mes-select').addEventListener('change', trocarPeriodo);
+  document.getElementById('btn-trigger-new-mes').addEventListener('click', inicializarNovoPeriodo);
+
+  // Eventos da Guia: Captação
+  document.getElementById('btn-add-rec').addEventListener('click', addReceita);
+  
+  document.getElementById('tab-captacao').addEventListener('blur', (e) => {
+    if (e.target && e.target.classList.contains('input-receita-dinamico')) {
+      const d = getPeriodoAtual();
+      const idx = parseInt(e.target.dataset.idx);
+      const tipo = e.target.dataset.tipo;
+      const arr = tipo === 'fixa' ? d.receitasFixas : d.receitasVariaveis;
+      if(arr[idx]) {
+        arr[idx].val = parseBr(e.target.value);
+      }
+      renderCaptacao();
+    }
+  }, true);
+
+  document.getElementById('tab-captacao').addEventListener('click', (e) => {
+    const targetBtn = e.target.closest('.btn-del-receita-dinamico');
+    if (targetBtn) {
+      const idx = parseInt(targetBtn.dataset.idx);
+      const tipo = targetBtn.dataset.tipo;
+      const d = getPeriodoAtual();
+      if (tipo === 'fixa') d.receitasFixas.splice(idx,1);
+      else d.receitasVariaveis.splice(idx,1);
+      renderCaptacao();
+    }
+  });
+
+  // Eventos da Guia: Orçamento
+  document.getElementById('tab-orcamento').addEventListener('input', (e) => {
+    if (e.target && e.target.classList.contains('slider-orcamento-dinamico')) {
+      const cat = e.target.dataset.cat;
+      const val = parseInt(e.target.value);
+      const d = getPeriodoAtual();
+      d.porcentagens[cat] = val;
+      
+      const v = receitaTotal() * val / 100;
+      e.target.parentElement.querySelector('.pct-label').textContent = val + '% → ' + fmt(v);
+    }
+  });
+
+  // Eventos da Guia: Registro
+  document.getElementById('btn-add-desp-submit').addEventListener('click', addDespesa);
+  document.getElementById('tab-registro').addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-del-despesa-dinamico');
+    if(btn) {
+      const idx = parseInt(btn.dataset.idx);
+      getPeriodoAtual().despesas.splice(idx, 1);
+      renderRegistro();
+    }
+  });
+
+  // Eventos da Guia: Controle
+  document.getElementById('btn-ctrl-gasto').addEventListener('click', () => toggleControlFilter('Gasto'));
+  document.getElementById('btn-ctrl-inv').addEventListener('click', () => toggleControlFilter('Investimento'));
+
+  // Eventos da Guia: Patrimônio
+  document.getElementById('patr-chart-date').addEventListener('change', renderPatrimonioChart);
+  document.getElementById('btn-chart-total-mode').addEventListener('click', () => toggleChartTotal(true));
+
+  // Barra de Navegação do App (Bottom Nav) via Event Delegation
+  document.getElementById('bottom-navigation-bar').addEventListener('click', (e) => {
+    const item = e.target.closest('.nav-item');
+    if (item) {
+      switchTab(item.dataset.tab, item);
+    }
+  });
+
+  // Inicialização Padrão de Ciclo de Vida
+  document.getElementById('ano-select').value = "2026";
+  document.getElementById('mes-select').value = "Maio";
+  trocarPeriodo();
+});
+</script>
+</body>
+</html>
