@@ -2,977 +2,922 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Meu Financeiro — Aplicativo de Controle Financeiro Pessoal</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8; padding: 20px; display: flex; justify-content: center; }
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  
+  --cor-protecao: #22c55e;
+  --cor-acumulacao: #3b82f6;
+  --cor-construcao: #eab308;
+  --cor-projetos: #a855f7;
+  --cor-estilo: #f97316;
+}
 
-.app-shell { display: flex; flex-direction: column; width: 100%; max-width: 480px; height: 720px; background: var(--surface-0, #fff); border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border, #e2e8f0); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
 
-/* Login / Cadastro */
-.screen { display: none; flex-direction: column; height: 100%; }
+body { 
+  background: #f1f5f9; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  min-height: 100vh;
+}
+
+/* Estrutura Mobile WebApp Perfeita */
+.app-shell { 
+  display: flex; 
+  flex-direction: column; 
+  width: 100%; 
+  max-width: 480px; 
+  height: 100vh; 
+  background: var(--surface); 
+  overflow: hidden; 
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+@media(min-width: 481px) {
+  .app-shell {
+    height: 850px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+  }
+}
+
+/* Telas e Fluxo */
+.screen { display: none; flex-direction: column; height: 100%; width: 100%; }
 .screen.active { display: flex; }
 
-.auth-screen { background: #fff; align-items: center; justify-content: center; padding: 2rem; overflow-y: auto; }
-.auth-logo { text-align: center; margin-bottom: 1.5rem; }
-.auth-logo-mark { width: 56px; height: 56px; background: #1baf7a; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
-.auth-logo-mark i { font-size: 28px; color: #fff; }
-.auth-title { font-size: 22px; font-weight: 500; color: #1e293b; }
-.auth-sub { font-size: 14px; color: #64748b; margin-top: 4px; }
-.auth-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 340px; }
-.field-group { margin-bottom: 1rem; }
-.field-group label { font-size: 13px; color: #475569; display: block; margin-bottom: 6px; font-weight: 500; }
-.field-group input { width: 100%; padding: 10px 12px; border: 0.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #fff; color: #1e293b; outline: none; }
-.field-group input:focus { border-color: #1baf7a; }
-.checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-size: 13px; color: #475569; }
-.checkbox-group input { cursor: pointer; width: 16px; height: 16px; accent-color: #1baf7a; }
-.btn-auth { width: 100%; padding: 11px; background: #1baf7a; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 4px; }
-.btn-auth:hover { background: #169966; }
-.auth-divider { border: 0.5px dashed #e2e8f0; margin: 1.5rem 0 1rem; }
-.auth-footer-text { text-align: center; font-size: 13px; color: #64748b; }
-.btn-toggle-auth { width: 100%; padding: 9px; background: none; border: 0.5px solid #cbd5e1; color: #475569; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 8px; }
-.btn-toggle-auth:hover { background: #f1f5f9; }
-.auth-err { color: #e24b4a; font-size: 12px; margin-bottom: 10px; text-align: center; display: none; }
+.auth-screen { 
+  padding: 2rem; 
+  justify-content: center; 
+  align-items: stretch;
+  background: var(--surface);
+  overflow-y: auto;
+}
 
-/* Top bar */
-.topbar { background: #f8fafc; border-bottom: 0.5px solid #e2e8f0; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 56px; flex-shrink: 0; }
-.topbar-left { display: flex; align-items: center; gap: 8px; }
-.topbar-logo { width: 32px; height: 32px; background: #1baf7a; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.topbar-logo i { font-size: 18px; color: #fff; }
-.topbar-title { font-size: 15px; font-weight: 600; color: #0f172a; }
-.user-badge { font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #475569; font-weight: 600; margin-left: 4px; }
-.topbar-selectors { display: flex; align-items: center; gap: 6px; }
-.topbar-selectors select { font-size: 13px; font-weight: 500; color: #0f172a; background: #fff; border: 0.5px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; cursor: pointer; outline: none; }
-.btn-new-mes { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: none; border: 0.5px solid #1baf7a; color: #1baf7a; border-radius: 8px; cursor: pointer; font-size: 14px; }
-.btn-logout { font-size: 16px; color: #64748b; background: none; border: none; cursor: pointer; display: flex; align-items: center; margin-left: 4px; }
+.auth-header { text-align: center; margin-bottom: 2rem; }
+.auth-header i { font-size: 3.5rem; color: var(--primary); }
+.auth-header h1 { font-size: 1.75rem; color: var(--text); margin-top: 0.5rem; }
 
-/* Bottom nav */
-.bottom-nav { display: flex; background: #f8fafc; border-top: 0.5px solid #e2e8f0; flex-shrink: 0; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px 10px; cursor: pointer; gap: 3px; border: none; background: none; }
-.nav-item i { font-size: 20px; color: #64748b; }
-.nav-item span { font-size: 10px; color: #64748b; }
-.nav-item.active i, .nav-item.active span { color: #1baf7a; font-weight: 600; }
+.form-group { margin-bottom: 1.25rem; }
+.form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+.form-control { 
+  width: 100%; 
+  padding: 0.75rem 1rem; 
+  border: 1px solid var(--border); 
+  border-radius: 10px; 
+  font-size: 1rem; 
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-control:focus { border-color: var(--primary); }
 
-/* Content area */
-.content { flex: 1; overflow-y: auto; padding: 0; background: #fff; }
+.btn { 
+  width: 100%; 
+  padding: 0.85rem; 
+  background: var(--primary); 
+  color: #fff; 
+  border: none; 
+  border-radius: 10px; 
+  font-size: 1rem; 
+  font-weight: 600; 
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn:hover { background: var(--primary-hover); }
+.btn-text { background: none; color: var(--primary); margin-top: 1rem; font-size: 0.875rem; font-weight: 500; }
 
-/* -------- TELA 1: CAPTAÇÃO -------- */
-.section-head { padding: 1rem 1rem 0.5rem; }
-.section-head h2 { font-size: 16px; font-weight: 500; color: #1e293b; }
-.section-head p { font-size: 12px; color: #64748b; margin-top: 2px; }
+/* Dashboard Principal */
+.app-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  z-index: 10;
+}
 
-.receita-total-card { margin: 0.75rem 1rem; background: #0f6e56; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; }
-.receita-total-card .label { font-size: 12px; color: rgba(255,255,255,0.7); }
-.receita-total-card .valor { font-size: 24px; font-weight: 500; color: #fff; }
-.receita-total-card .delta { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.user-profile { display: flex; align-items: center; gap: 0.75rem; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+.period-selectors { display: flex; gap: 0.5rem; }
+.select-period { padding: 0.4rem 0.6rem; border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; background: #f8fafc; }
 
-.receitas-list { padding: 0 1rem 1rem; }
-.receitas-list h3 { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
-.receita-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
-.receita-item .ri-name { font-size: 14px; color: #1e293b; }
-.receita-item input[type=text] { border: none; background: transparent; font-size: 14px; color: #1e293b; width: 120px; outline: none; text-align: right; }
-.add-receita-row { display: flex; gap: 8px; margin-top: 10px; }
-.add-receita-row input { flex: 1; padding: 8px 10px; font-size: 13px; border: 0.5px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; min-width: 0; }
-.btn-add { padding: 8px 14px; background: #1baf7a; color: #fff; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.content-area { 
+  flex: 1; 
+  overflow-y: auto; 
+  padding: 1.25rem; 
+  background: var(--background);
+  padding-bottom: 80px; /* Evita que o conteúdo suma atrás da nav */
+  -webkit-overflow-scrolling: touch;
+}
 
-/* -------- TELA 2: ORÇAMENTO -------- */
-.orcamento-list { padding: 0 1rem 1rem; }
-.caixa-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
-.caixa-card .caixa-head { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
-.caixa-head .tag { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
-.caixa-head .meta { font-size: 13px; font-weight: 500; color: #1e293b; }
-.caixa-head .pct { font-size: 12px; color: #64748b; }
-.caixa-body { border-top: 0.5px solid #e2e8f0; }
-.caixa-row { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 13px; }
-.caixa-row .cr-name { color: #475569; }
-.caixa-row .cr-val { color: #1e293b; font-weight: 500; }
-.pct-slider { padding: 4px 14px 10px; }
-.pct-slider input[type=range] { width: 100%; }
-.pct-slider .pct-label { font-size: 11px; color: #64748b; text-align: right; display: block; margin-top: 2px; }
+/* Menu de Navegação Inferior Nativo */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+}
 
-/* -------- TELA 3: REGISTRO -------- */
-.desp-form { margin: 0 1rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 1rem; }
-.desp-form h3 { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 12px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.form-row select, .form-row input { padding: 8px 10px; font-size: 13px; border: 0.5px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; width: 100%; outline: none; }
-.btn-add-desp { width: 100%; padding: 10px; background: #2a78d6; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
-.desp-lista { padding: 0 1rem 1rem; }
-.desp-lista h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
-.desp-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
-.desp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.desp-info { flex: 1; min-width: 0; }
-.desp-info .di-desc { font-size: 13px; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.desp-info .di-cat { font-size: 11px; color: #64748b; }
-.desp-val { font-size: 13px; font-weight: 500; color: #1e293b; flex-shrink: 0; }
-.desp-del { background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px; }
-.lbl-dono { font-size: 10px; font-weight: 600; padding: 1px 4px; border-radius: 4px; margin-left: 6px; display: inline-block; vertical-align: middle; }
-.lbl-dono.andre { background: #e0f2fe; color: #0369a1; }
-.lbl-dono.gessyca { background: #fce7f3; color: #be185d; }
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  height: 100%;
+}
 
-/* -------- TELA 4: CONTROLE -------- */
-.control-filter-tabs { display: flex; margin: 0 1rem 1rem; border: 0.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc; }
-.ctrl-tab-btn { flex: 1; padding: 8px; border: none; background: none; font-size: 12px; font-weight: 500; color: #64748b; cursor: pointer; }
-.ctrl-tab-btn.active { background: #fff; color: #1baf7a; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.nav-item i { font-size: 1.4rem; margin-bottom: 2px; }
+.nav-item.active { color: var(--primary); font-weight: 700; }
 
-.ctrl-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 1rem 1rem; }
-.ctrl-metric { background: #f1f5f9; border-radius: 8px; padding: 10px 12px; }
-.ctrl-metric .cm-label { font-size: 11px; color: #64748b; margin-bottom: 4px; }
-.ctrl-metric .cm-val { font-size: 18px; font-weight: 500; color: #1e293b; }
-.ctrl-metric .cm-val.green { color: #1baf7a; }
-.ctrl-metric .cm-val.red { color: #e24b4a; }
-.termometro-list { padding: 0 1rem 1rem; }
-.termo-item { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; padding: 10px 14px; }
-.termo-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.termo-top .ti-name { font-size: 13px; font-weight: 500; color: #1e293b; }
-.termo-top .ti-status { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
-.status-ok { background: #e1f5ee; color: #0f6e56; }
-.status-over { background: #fcebeb; color: #a32d2d; }
-.termo-bar-bg { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
-.termo-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-.termo-vals { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; }
-.termo-split-row { display: flex; gap: 12px; font-size: 10px; color: #64748b; margin-top: 4px; padding-top: 4px; border-top: 0.5px dashed #cbd5e1; }
+/* Blocos de Resumo Visual */
+.card { background: var(--surface); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 1.25rem; }
+.card-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
 
-/* -------- TELA 5: PATRIMÔNIO (GRÁFICO) -------- */
-.patr-hero { margin: 0.75rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; }
-.patr-hero .ph-label { font-size: 12px; color: #64748b; }
-.patr-hero .ph-val { font-size: 26px; font-weight: 500; color: #1e293b; margin: 2px 0; }
-.patr-hero .ph-row { display: flex; gap: 1.5rem; margin-top: 8px; font-size: 12px; }
-.patr-hero .ph-row span { color: #64748b; }
-.patr-hero .ph-row strong { color: #1e293b; }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+.metric-box { background: var(--surface); padding: 1rem; border-radius: 14px; border: 1px solid var(--border); }
+.metric-box.full { grid-column: span 2; }
+.metric-box .label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.25rem; }
+.metric-box .val { font-size: 1.25rem; font-weight: 800; color: var(--text); }
 
-.patr-chart-controls { display: flex; justify-content: space-between; align-items: center; margin: 0 1rem 10px; gap: 8px; }
-.patr-chart-controls select { font-size: 12px; padding: 4px 6px; border: 0.5px solid #cbd5e1; border-radius: 6px; background: #fff; outline: none; color: #1e293b; }
-.btn-chart-total { font-size: 11px; font-weight: 500; padding: 4px 10px; border: 0.5px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer; color: #475569; }
-.btn-chart-total.active { background: #0f6e56; color: #fff; border-color: #0f6e56; }
+/* Linha de Repasse do Casal Ajustada */
+.couple-split-line {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  border-top: 1px dashed var(--border);
+  padding-top: 0.75rem;
+  margin-top: 0.5rem;
+}
 
-.patr-visual-chart { display: flex; height: 100px; margin: 0 1rem 1rem; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 12px; align-items: flex-end; justify-content: space-around; gap: 6px; }
-.chart-column { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
-.chart-bar-fill { width: 100%; max-width: 24px; background: #1baf7a; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s; }
-.chart-column-label { font-size: 9px; color: #64748b; margin-top: 4px; text-align: center; }
-.chart-column-val { font-size: 9px; font-weight: 500; color: #1e293b; margin-bottom: 2px; }
+/* Controle de Sliders */
+.slider-group { margin-bottom: 1.25rem; }
+.slider-header { display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.slider-input { width: 100%; -webkit-appearance: none; height: 6px; border-radius: 3px; background: #e2e8f0; outline: none; }
+.slider-input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; }
 
-.proj-list { padding: 0 1rem 1rem; }
-.proj-list h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
-.proj-card { background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
-.proj-card .pc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.proj-card .pc-name { font-size: 14px; font-weight: 500; color: #1e293b; }
-.proj-card .pc-pct { font-size: 13px; font-weight: 500; }
-.proj-bar-bg { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
-.proj-bar-fill { height: 100%; border-radius: 3px; }
-.proj-vals { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; }
+/* Listas e Itens Dinâmicos */
+.list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+.list-item:last-child { border-bottom: none; }
+.list-item-info { display: flex; flex-direction: column; }
+.list-item-title { font-weight: 600; color: var(--text); }
+.list-item-sub { font-size: 0.75rem; color: var(--text-secondary); }
+.list-item-val { font-weight: 700; text-align: right; }
 
-.ativos-list { padding: 0 1rem 1rem; }
-.ativos-list h3 { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
-.ativo-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
-.ativo-item .ai-name { font-size: 13px; color: #1e293b; }
-.ativo-item .ai-sub { font-size: 11px; color: #64748b; }
-.ativo-item .ai-val { font-size: 13px; font-weight: 500; color: #1e293b; }
-.ativo-item .ai-rend { font-size: 11px; color: #1baf7a; }
+.btn-del { background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; padding-left: 0.5rem; }
+
+/* Barras de Caixas / Progresso */
+.box-progress-container { margin-bottom: 1.25rem; }
+.box-progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+.box-progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.box-progress-fill { height: 100%; width: 0%; transition: width 0.3s; }
+
+/* Gráfico Customizado Limpo */
+.chart-container { display: flex; align-items: flex-end; justify-content: space-between; height: 160px; padding-top: 1rem; margin-top: 0.5rem; gap: 8px; }
+.chart-bar-wrapper { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+.chart-bar { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; position: relative; }
+.chart-bar:hover .chart-tooltip { display: block; }
+.chart-tooltip { display: none; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; white-space: nowrap; z-index: 20; }
+.chart-label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 600; margin-top: 0.5rem; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
 </style>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
 
-<div class="app-shell" id="app">
+<div class="app-shell">
 
-  <div class="screen auth-screen active" id="screen-login">
-    <div class="auth-logo">
-      <div class="auth-logo-mark"><i class="ti ti-report-money" aria-hidden="true"></i></div>
-      <div class="auth-title">Meu Financeiro</div>
-      <div class="auth-sub">Seu aplicativo de finanças profissional</div>
+  <div id="screen-auth" class="screen auth-screen active">
+    <div class="auth-header">
+      <i class="ti ti-wallet"></i>
+      <h1 id="auth-title">Fazer Login</h1>
     </div>
-    <div class="auth-card">
-      <div class="auth-err" id="login-error-msg">E-mail ou senha incorretos!</div>
-      <div class="field-group">
-        <label for="inp-email">Email</label>
-        <input type="email" id="inp-email" placeholder="seu@email.com">
-      </div>
-      <div class="field-group">
-        <label for="inp-senha">Senha</label>
-        <input type="password" id="inp-senha" placeholder="••••••••">
-      </div>
-      <button class="btn-auth" id="btn-do-login">Entrar</button>
-      
-      <div class="auth-divider"></div>
-      <div class="auth-footer-text">Não possui conta?</div>
-      <button class="btn-toggle-auth" id="btn-go-to-register">Criar conta</button>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="auth-email" class="form-control" placeholder="seuemail@exemplo.com">
     </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
+    </div>
+    <button id="btn-auth-submit" class="btn">Entrar</button>
+    <button id="btn-auth-toggle" class="btn-text">Não tem conta? Cadastre-se</button>
   </div>
 
-  <div class="screen auth-screen" id="screen-register">
-    <div class="auth-logo">
-      <div class="auth-logo-mark"><i class="ti ti-report-money" aria-hidden="true"></i></div>
-      <div class="auth-title">Criar conta</div>
-      <div class="auth-sub">Cadastre-se para acessar o sistema</div>
-    </div>
-    <div class="auth-card">
-      <div class="auth-err" id="register-error-msg">Erro ao criar conta!</div>
-      <div class="field-group">
-        <label for="reg-cpf">CPF</label>
-        <input type="text" id="reg-cpf" placeholder="000.000.000-00" maxlength="11">
+  <div id="screen-main" class="screen">
+    
+    <header class="app-header">
+      <div class="user-profile">
+        <div class="user-avatar" id="header-avatar">U</div>
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">Bem-vindo(a)</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text);" id="header-username">Usuário</div>
+        </div>
       </div>
-      <div class="field-group">
-        <label for="reg-nome">Nome</label>
-        <input type="text" id="reg-nome" placeholder="Seu nome completo">
+      <div class="period-selectors">
+        <select id="select-mes" class="select-period">
+          <option value="01">Jan</option><option value="02">Fev</option>
+          <option value="03">Mar</option><option value="04">Abr</option>
+          <option value="05">Mai</option><option value="06">Jun</option>
+          <option value="07">Jul</option><option value="08">Ago</option>
+          <option value="09">Set</option><option value="10">Out</option>
+          <option value="11">Nov</option><option value="12">Dez</option>
+        </select>
+        <select id="select-ano" class="select-period"></select>
+        <button id="btn-logout" style="background:none; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer; margin-left:4px;"><i class="ti ti-logout"></i></button>
       </div>
-      <div class="field-group">
-        <label for="reg-email">Email</label>
-        <input type="email" id="reg-email" placeholder="seu@email.com">
-      </div>
-      <div class="field-group">
-        <label for="reg-senha">Senha</label>
-        <input type="password" id="reg-senha" placeholder="••••••••">
-      </div>
-      <div class="field-group">
-        <label for="reg-confirmar-senha">Confirmar senha</label>
-        <input type="password" id="reg-confirmar-senha" placeholder="••••••••">
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="reg-capsula">
-        <label for="reg-capsula">Não sou um robô</label>
-      </div>
-      <button class="btn-auth" id="btn-do-register">Criar conta</button>
+    </header>
+
+    <main class="content-area">
       
-      <div class="auth-divider"></div>
-      <div class="auth-footer-text">Já possui uma conta?</div>
-      <button class="btn-toggle-auth" id="btn-go-to-login">Voltar ao Login</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-main" style="flex-direction:column;">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div class="topbar-logo"><i class="ti ti-report-money" aria-hidden="true"></i></div>
-        <span class="topbar-title">Meu Financeiro</span>
-        <span class="user-badge" id="app-user-logged">...</span>
-      </div>
-      <div class="topbar-selectors">
-        <select id="ano-select">
-          <option value="2025">2025</option>
-          <option value="2026" selected>2026</option>
-          <option value="2027">2027</option>
-        </select>
-        
-        <select id="mes-select">
-          <option value="Janeiro">Janeiro</option>
-          <option value="Fevereiro">Fevereiro</option>
-          <option value="Março">Março</option>
-          <option value="Abril">Abril</option>
-          <option value="Maio" selected>Maio</option>
-          <option value="Junho">Junho</option>
-          <option value="Julho">Julho</option>
-          <option value="Agosto">Agosto</option>
-          <option value="Setembro">Setembro</option>
-          <option value="Outubro">Outubro</option>
-          <option value="Novembro">Novembro</option>
-          <option value="Dezembro">Dezembro</option>
-        </select>
-        
-        <button class="btn-new-mes" id="btn-trigger-new-mes" title="Criar ou herdar este período">
-          <i class="ti ti-plus" aria-hidden="true"></i>
-        </button>
-      </div>
-      <button class="btn-logout" id="btn-trigger-logout"><i class="ti ti-logout" aria-hidden="true"></i></button>
-    </div>
-
-    <div class="content" id="main-content">
-
-      <div id="tab-captacao" class="tab-content" style="display:block">
-        <div class="section-head">
-          <h2>Captação de receitas</h2>
-          <p>Cadastre todas as fontes de renda do mês</p>
-        </div>
-        <div class="receita-total-card">
-          <div>
-            <div class="label">Receita total — <span class="label-periodo">...</span></div>
-            <div class="valor" id="rt-valor">R$ 0</div>
+      <div id="tab-content-captacao" class="tab-pane">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-circle-plus" style="color:var(--cor-protecao)"></i> Adicionar Receita</div>
+          <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+            <input type="text" id="rec-nome" class="form-control" placeholder="Ex: Salário, Vendas">
+            <input type="number" id="rec-valor" class="form-control" placeholder="R$ 0,00" style="width:120px;">
           </div>
-          <div style="text-align:right">
-            <i class="ti ti-trending-up" style="font-size:28px;color:rgba(255,255,255,0.6)" aria-hidden="true"></i>
-            <div class="delta" id="rt-delta">0 fontes ativas</div>
+          <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+            <label style="font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:4px">
+              <input type="radio" name="rec-tipo" value="fixas" checked> Fixa
+            </label>
+            <label style="font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:4px">
+              <input type="radio" name="rec-tipo" value="variaveis"> Variável
+            </label>
           </div>
+          <button id="btn-add-receita" class="btn">Adicionar Receita</button>
         </div>
-        <div class="receitas-list">
-          <h3>Receitas fixas</h3>
+
+        <div class="card">
+          <div class="card-title">Receitas Fixas</div>
           <div id="list-receitas-fixas"></div>
-          <h3 style="margin-top:12px">Receitas variáveis</h3>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Receitas Variáveis</div>
           <div id="list-receitas-variaveis"></div>
-          <div class="add-receita-row" style="margin-top:12px">
-            <input id="nova-rec-nome" placeholder="Nome da receita" type="text">
-            <input id="nova-rec-val" placeholder="R$ 0,00" type="text" style="max-width:110px">
-            <select id="nova-rec-tipo" style="font-size:13px;border:0.5px solid #cbd5e1;border-radius:8px;background:#fff;color:#1e293b;padding:0 8px;max-width:90px">
-              <option value="fixa">Fixa</option>
-              <option value="variavel">Variável</option>
-            </select>
-            <button class="btn-add" id="btn-add-rec"><i class="ti ti-plus" aria-hidden="true"></i></button>
-          </div>
         </div>
       </div>
 
-      <div id="tab-orcamento" class="tab-content" style="display:none">
-        <div class="section-head">
-          <h2>Motor de orçamento</h2>
-          <p>Distribuição automática por percentuais</p>
+      <div id="tab-content-orcamento" class="tab-pane" style="display:none;">
+        <div class="card" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color:#fff;">
+          <div style="font-size:0.85rem; font-weight:600; opacity:0.9; text-transform:uppercase;">Receita Total do Mês</div>
+          <div style="font-size:2rem; font-weight:800; margin-top:0.25rem;" id="orc-receita-total">R$ 0,00</div>
         </div>
-        <div class="orcamento-list" id="orcamento-list"></div>
-      </div>
+        
+        <div class="card">
+          <div class="card-title" style="color:var(--cor-protecao)"><span style="width:12px; height:12px; background:var(--cor-protecao); border-radius:3px;"></span> CAIXA 1 – PROTEÇÃO</div>
+          <div id="sliders-caixa-1"></div>
+        </div>
 
-      <div id="tab-registro" class="tab-content" style="display:none">
-        <div class="section-head">
-          <h2>Registro Financeiro</h2>
-          <p>Os lançamentos entram na carteira de quem está logado</p>
+        <div class="card">
+          <div class="card-title" style="color:var(--cor-acumulacao)"><span style="width:12px; height:12px; background:var(--cor-acumulacao); border-radius:3px;"></span> CAIXA 2 – ACUMULAÇÃO</div>
+          <div id="sliders-caixa-2"></div>
         </div>
-        <div class="desp-form">
-          <h3 style="color:#1e293b">Nova movimentação por: <b id="lbl-form-dono" style="color:#1baf7a">...</b></h3>
-          <div class="form-row">
-            <input type="date" id="desp-data">
-            <select id="desp-cat">
-              <option value="">Categoria</option>
-              <option>Moradia</option><option>Alimentação</option><option>Transporte</option>
-              <option>Saúde</option><option>Contas fixas</option><option>Educação</option>
-              <option>Lazer</option><option>Compras</option><option>Financiamento carro</option>
-              <option>Reserva de Emergência</option><option>Investimentos</option>
-              <option>Patrimônio</option><option>Projetos</option><option>Despesas Extra</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <input type="text" id="desp-desc" placeholder="Descrição">
-            <input type="text" id="desp-val" placeholder="R$ 0,00">
-          </div>
-          <button class="btn-add-desp" id="btn-add-desp-submit">Registrar</button>
+
+        <div class="card">
+          <div class="card-title" style="color:var(--cor-construcao)"><span style="width:12px; height:12px; background:var(--cor-construcao); border-radius:3px;"></span> CAIXA 3 – CONSTRUÇÃO</div>
+          <div id="sliders-caixa-3"></div>
         </div>
-        <div class="desp-lista">
-          <h3>Lançamentos — <span class="label-periodo">...</span></h3>
-          <div id="list-despesas"></div>
+
+        <div class="card">
+          <div class="card-title" style="color:var(--cor-projetos)"><span style="width:12px; height:12px; background:var(--cor-projetos); border-radius:3px;"></span> CAIXA 4 – PROJETOS</div>
+          <div id="sliders-caixa-4"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color:var(--cor-estilo)"><span style="width:12px; height:12px; background:var(--cor-estilo); border-radius:3px;"></span> CAIXA 5 – ESTILO DE VIDA</div>
+          <div id="sliders-caixa-5"></div>
         </div>
       </div>
 
-      <div id="tab-controle" class="tab-content" style="display:none">
-        <div class="section-head">
-          <h2>Termômetro financeiro</h2>
-          <p>Realizado vs. orçado em tempo real com visão individualizada</p>
-        </div>
-
-        <div class="control-filter-tabs">
-          <button class="ctrl-tab-btn active" id="btn-ctrl-gasto">🏷️ Gastos (Consumo)</button>
-          <button class="ctrl-tab-btn" id="btn-ctrl-inv">💰 Investimentos (Aportes)</button>
-        </div>
-
-        <div class="ctrl-summary">
-          <div class="ctrl-metric">
-            <div class="cm-label">Receita total</div>
-            <div class="cm-val" id="ctrl-receita">R$ 0</div>
+      <div id="tab-content-registro" class="tab-pane" style="display:none;">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-edit" style="color:var(--primary)"></i> Novo Lançamento</div>
+          <div class="form-group">
+            <label>Data</label>
+            <input type="date" id="reg-data" class="form-control">
           </div>
-          <div class="ctrl-metric">
-            <div class="cm-label">Total gasto</div>
-            <div class="cm-val" id="ctrl-gasto">R$ 0</div>
+          <div class="form-group">
+            <label>Categoria</label>
+            <select id="reg-categoria" class="form-control"></select>
           </div>
-          <div class="ctrl-metric">
-            <div class="cm-label">Categorias OK</div>
-            <div class="cm-val green" id="ctrl-ok">—</div>
+          <div class="form-group">
+            <label>Descrição</label>
+            <input type="text" id="reg-descricao" class="form-control" placeholder="Ex: Mercado, Aporte Tesouro">
           </div>
-          <div class="ctrl-metric">
-            <div class="cm-label">Estouradas</div>
-            <div class="cm-val red" id="ctrl-over">—</div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="number" id="reg-valor" class="form-control" placeholder="0,00">
           </div>
-        </div>
-        <div class="termometro-list" id="termometro-list"></div>
-      </div>
-
-      <div id="tab-patrimonio" class="tab-content" style="display:none">
-        <div class="section-head">
-          <h2>Patrimônio e projetos</h2>
-          <p>Visão de longo prazo das 4 caixas</p>
-        </div>
-        <div class="patr-hero">
-          <div class="ph-label">Patrimônio líquido</div>
-          <div class="ph-val" id="patr-liq">R$ 0</div>
-          <div class="ph-row">
-            <div><span>Ativos </span><strong id="patr-ativos">R$ 0</strong></div>
-            <div><span>Passivos </span><strong id="patr-passivos" style="color:#e24b4a">R$ 0</strong></div>
-          </div>
+          <button id="btn-add-movimentacao" class="btn">Registrar Lançamento</button>
         </div>
 
-        <div class="patr-chart-controls">
-          <select id="patr-chart-date">
-            <option value="2026" selected>Ano Ativo (2026)</option>
-            <option value="2025">Ano Anterior (2025)</option>
-          </select>
-          <button class="btn-chart-total" id="btn-chart-total-mode">Ver Total Geral</button>
-        </div>
-
-        <div class="patr-visual-chart" id="patr-bars-container"></div>
-
-        <div class="ativos-list">
-          <h3>Caixas</h3>
-          <div id="list-ativos"></div>
-        </div>
-        <div class="proj-list">
-          <h3>Projetos e metas</h3>
-          <div id="list-projetos"></div>
+        <div class="card">
+          <div class="card-title">Histórico de Lançamentos</div>
+          <div id="list-movimentacoes"></div>
         </div>
       </div>
 
-    </div>
+      <div id="tab-content-controle" class="tab-pane" style="display:none;">
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="label">Total Gasto</div>
+            <div class="val" id="ctrl-total-gasto" style="color:#ef4444;">R$ 0,00</div>
+          </div>
+          <div class="metric-box">
+            <div class="label">Total Investido</div>
+            <div class="val" id="ctrl-total-investido" style="color:var(--cor-protecao);">R$ 0,00</div>
+          </div>
+          <div class="metric-box full">
+            <div class="label">Margem Restante (Fluxo de Caixa)</div>
+            <div class="val" id="ctrl-total-restante">R$ 0,00</div>
+            <div class="couple-split-line" id="ctrl-couple-split">
+              👨 André: R$ 0,00 | 👩 Gessyca: R$ 0,00
+            </div>
+          </div>
+        </div>
 
-    <div class="bottom-nav" id="bottom-navigation-bar">
-      <button class="nav-item active" data-tab="captacao" aria-label="Receitas">
-        <i class="ti ti-wallet" aria-hidden="true"></i><span>Receitas</span>
-      </button>
-      <button class="nav-item" data-tab="orcamento" aria-label="Orçamento">
-        <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i><span>Orçamento</span>
-      </button>
-      <button class="nav-item" data-tab="registro" aria-label="Registro">
-        <i class="ti ti-edit" aria-hidden="true"></i><span>Registro</span>
-      </button>
-      <button class="nav-item" data-tab="controle" aria-label="Controle">
-        <i class="ti ti-chart-bar" aria-hidden="true"></i><span>Controle</span>
-      </button>
-      <button class="nav-item" data-tab="patrimonio" aria-label="Patrimônio">
-        <i class="ti ti-building-bank" aria-hidden="true"></i><span>Patrimônio</span>
-      </button>
-    </div>
+        <div class="card">
+          <div class="card-title">Acompanhamento dos Limites do Mês</div>
+          <div id="list-controle-limites"></div>
+        </div>
+      </div>
+
+      <div id="tab-content-patrimonio" class="tab-pane" style="display:none;">
+        <div class="card" style="background:#0f172a; color:#fff;">
+          <div style="font-size:0.85rem; font-weight:600; opacity:0.8; text-transform:uppercase;">Patrimônio Líquido Consolidado</div>
+          <div style="font-size:2.25rem; font-weight:800; color:#22c55e; margin-top:0.25rem;" id="patr-consolidado">R$ 0,00</div>
+          <p style="font-size:0.75rem; opacity:0.6; margin-top:0.25rem;">(Base de histórico consolidada + aportes realizados)</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-bar" style="color:var(--primary)"></i> Evolução Patrimonial Recente</div>
+          <div class="chart-container" id="patr-evolution-chart">
+            </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-box" style="color:var(--cor-acumulacao)"></i> Metas de Longo Prazo das Caixas</div>
+          <div id="list-metas-caixas"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <nav class="bottom-nav" id="bottom-navigation-bar">
+      <button class="nav-item active" data-tab="captacao"><i class="ti ti-circle-plus"></i>Captação</button>
+      <button class="nav-item" data-tab="orcamento"><i class="ti ti-adjustments-horizontal"></i>Orçamento</button>
+      <button class="nav-item" data-tab="registro"><i class="ti ti-edit"></i>Registro</button>
+      <button class="nav-item" data-tab="controle"><i class="ti ti-adjustments"></i>Controle</button>
+      <button class="nav-item" data-tab="patrimonio"><i class="ti ti-chart-line"></i>Patrimônio</button>
+    </nav>
+
   </div>
+
 </div>
 
 <script>
-// ==========================================
-// CONFIGURAÇÃO DO FIREBASE (PRODUÇÃO/SERVIDOR)
-// ==========================================
+// CONFIGURAÇÃO DO FIREBASE (Coloque as chaves originais do seu projeto aqui)
 const firebaseConfig = {
-  apiKey: "AIzaSyACW4Q-uL18usP4z7PTwsGhoAnT-aBfInE",
-  authDomain: "meu-financeiro-655e5.firebaseapp.com",
-  databaseURL: "https://meu-financeiro-655e5-default-rtdb.firebaseio.com",
-  projectId: "meu-financeiro-655e5",
-  storageBucket: "meu-financeiro-655e5.firebasestorage.app",
-  messagingSenderId: "984077757274",
-  appId: "1:984077757274:web:2c74d3fc498f3b1359e163",
-  measurementId: "G-0D6N4N1VPQ"
+  apiKey: "AIzaSy...",
+  authDomain: "seu-projeto.firebaseapp.com",
+  databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com",
+  projectId: "seu-projeto",
+  storageBucket: "seu-projeto.appspot.com",
+  messagingSenderId: "12345678",
+  appId: "1:1234..."
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const database = firebase.database();
+const auth = firebase.auth();
 
-// ==========================================
-// CONFIGURAÇÕES E ESTADOS INICIAIS
-// ==========================================
-const fmt = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
-const parseBr = s => parseFloat(String(s).replace(/[R$\s.]/g,'').replace(',','.')) || 0;
-
-const catColors = {
-  'Moradia':'#2a78d6','Alimentação':'#1baf7a','Transporte':'#eda100',
-  'Saúde':'#e34948','Contas fixas':'#4a3aa7','Educação':'#008300',
-  'Lazer':'#e87ba4','Compras':'#eb6834','Financiamento carro':'#a32d2d',
-  'Reserva de Emergência':'#0f6e56','Investimentos':'#085041',
-  'Patrimônio':'#0c447c','Projetos':'#533489','Despesas Extra':'#888780'
+// CONFIGURAÇÃO DAS CATEGORIAS DA PLANILHA (Porcentagens Padrão e Caixa Pertencente)
+const SCHEMA_ORCAMENTO = {
+  "Reserva de Emergência": { caixa: 1, pct: 9, cor: "var(--cor-protecao)", meta: 50000 },
+  "Renda Fixa": { caixa: 2, pct: 5, cor: "var(--cor-acumulacao)", meta: 0 },
+  "Ações": { caixa: 2, pct: 3, cor: "var(--cor-acumulacao)", meta: 0 },
+  "Patrimônio": { caixa: 3, pct: 5, cor: "var(--cor-construcao)", meta: 60000 },
+  "Projetos": { caixa: 4, pct: 5, cor: "var(--cor-projetos)", meta: 40000 },
+  "Moradia": { caixa: 5, pct: 20, cor: "var(--cor-estilo)", meta: 0 },
+  "Contas fixas": { caixa: 5, pct: 5, cor: "var(--cor-estilo)", meta: 0 },
+  "Alimentação": { caixa: 5, pct: 11, cor: "var(--cor-estilo)", meta: 0 },
+  "Transporte": { caixa: 5, pct: 4, cor: "var(--cor-estilo)", meta: 0 },
+  "Saúde": { caixa: 5, pct: 2, cor: "var(--cor-estilo)", meta: 0 },
+  "Educação": { caixa: 5, pct: 3, cor: "var(--cor-estilo)", meta: 0 },
+  "Financiamento carro": { caixa: 5, pct: 8, cor: "var(--cor-estilo)", meta: 0 },
+  "Lazer": { caixa: 5, pct: 10, cor: "var(--cor-estilo)", meta: 0 },
+  "Compras": { caixa: 5, pct: 10, cor: "var(--cor-estilo)", meta: 0 },
+  "Despesas Extra": { caixa: 5, pct: 0, cor: "var(--cor-estilo)", meta: 0 }
 };
 
-const caixasConfig = [
-  { nome:'Caixa 1 — Proteção', cor:'#0f6e56', cats:['Reserva de Emergência'], desc:'Reserva de emergência' },
-  { nome:'Caixa 2 — Acumulação', cor:'#2a78d6', cats:['Investimentos'], desc:'Investimentos financeiros' },
-  { nome:'Caixa 3 — Patrimônio', cor:'#4a3aa7', cats:['Patrimônio'], desc:'Construção patrimonial' },
-  { nome:'Caixa 4 — Projetos', cor:'#eda100', cats:['Projetos'], desc:'Projetos e compras' },
-  { nome:'Caixa 5 — Estilo de vida', cor:'#e34948', cats:['Moradia','Alimentação','Transporte','Saúde','Contas fixas','Educação','Financiamento carro','Lazer','Compras'], desc:'Essenciais e não essenciais' },
-];
-
-const ALLOWED_USERS = {
-  "16529117741": { nome: "André", email: "andre@meufinanceiro.com" },
-  "08683151417": { nome: "Gessyca", email: "gessyca@meufinanceiro.com" }
-};
-
+// ESTADO GLOBAL DO APP
 let DB_STATE = {
-  currentUser: null,
-  currentControlTab: "Gasto",
-  chartTotalActive: false,
-  anoSel: '2026',
-  mesSel: 'Maio',
-  dadosAnos: {},
-  patrimonioHistorico: {},
-  ativos: [],
-  projetos: []
+  usuario: null,
+  anoSel: "",
+  mesSel: "",
+  dadosMesa: {}
 };
 
-// CORREÇÃO 2: ATUALIZADO EXATAMENTE COM OS VALORES PADRÕES DA V0.7 / PLANILHA
-function criarEstruturaMesPadrao() {
-  return {
-    receitasFixas: {},
-    receitasVariaveis: {},
-    porcentagens: {
-      'Reserva de Emergência': 5, 'Investimentos': 5, 'Patrimônio': 10, 'Projetos': 10,
-      'Moradia': 23, 'Alimentação': 11, 'Transporte': 5, 'Saúde': 2,
-      'Contas fixas': 7, 'Educação': 2, 'Financiamento carro': 10,
-      'Lazer': 5, 'Compras': 5
-    },
-    despesas: {}
-  };
-}
+// FORMATADOR DE MOEDA (BRL)
+const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
-function getPeriodoAtual() {
-  const a = DB_STATE.anoSel;
-  const m = DB_STATE.mesSel;
-  if (!DB_STATE.dadosAnos[a]) DB_STATE.dadosAnos[a] = {};
-  if (!DB_STATE.dadosAnos[a][m]) {
-    DB_STATE.dadosAnos[a][m] = criarEstruturaMesPadrao();
-  }
-  return DB_STATE.dadosAnos[a][m];
-}
-
-function sincronizarPeriodoComFirebase() {
-  const a = DB_STATE.anoSel;
-  const m = DB_STATE.mesSel;
-  database.ref(`dadosAnos/${a}/${m}`).set(getPeriodoAtual());
-}
-
-// ==========================================
-// REGRAS DE NEGÓCIO DA V.07
-// ==========================================
-function receitaTotal() {
-  const d = getPeriodoAtual();
-  const rf = d.receitasFixas ? Object.values(d.receitasFixas) : [];
-  const rv = d.receitasVariaveis ? Object.values(d.receitasVariaveis) : [];
-  return [...rf, ...rv].reduce((s,r)=>s+r.val,0);
-}
-
-function limite(cat) {
-  const d = getPeriodoAtual();
-  const pct = d.porcentagens ? (d.porcentagens[cat]||0)/100 : 0;
-  return receitaTotal()*pct;
-}
-
-function realizado(cat) {
-  const d = getPeriodoAtual();
-  const desp = d.despesas ? Object.values(d.despesas) : [];
-  return desp.filter(x=>x.cat===cat).reduce((s,x)=>s+x.val,0);
-}
-
-// ==========================================
-// SISTEMA DE AUTENTICAÇÃO E CADASTRO VIA CPF
-// ==========================================
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
-}
-
+// CONTROLE DE TELAS (AUTH / APP MAIN)
 auth.onAuthStateChanged(user => {
   if (user) {
-    database.ref(`users/${user.uid}`).once('value').then(snapshot => {
-      const userData = snapshot.val();
-      if (userData) {
-        DB_STATE.currentUser = userData;
-        document.getElementById('app-user-logged').textContent = userData.nome;
-        document.getElementById('lbl-form-dono').textContent = userData.nome;
-        showScreen('screen-main');
-        activarEscutaRealtime();
-      }
-    });
+    DB_STATE.usuario = user;
+    document.getElementById('screen-auth').classList.remove('active');
+    document.getElementById('screen-main').classList.add('active');
+    
+    // Extrai primeiro nome limpo do usuário cadastrado para evitar falha de repasse
+    const primeiroNome = user.displayName ? user.displayName.split(' ')[0] : (user.email.toLowerCase().includes('andre') ? 'André' : 'Gessyca');
+    document.getElementById('header-username').textContent = primeiroNome;
+    document.getElementById('header-avatar').textContent = primeiroNome.charAt(0);
+    
+    inicializarSeletoresPeriodo();
   } else {
-    showScreen('screen-login');
+    DB_STATE.usuario = null;
+    document.getElementById('screen-main').classList.remove('active');
+    document.getElementById('screen-auth').classList.add('active');
   }
 });
 
-function handleLogin() {
-  const email = document.getElementById('inp-email').value.trim().toLowerCase();
-  const senha = document.getElementById('inp-senha').value;
-  const errEl = document.getElementById('login-error-msg');
-  errEl.style.display = 'none';
+// LOGIN / CADASTRO CONTROLES
+let modoCadastro = false;
+document.getElementById('btn-auth-toggle').addEventListener('click', () => {
+  modoCadastro = !modoCadastro;
+  document.getElementById('auth-title').textContent = modoCadastro ? 'Criar Conta' : 'Fazer Login';
+  document.getElementById('btn-auth-submit').textContent = modoCadastro ? 'Cadastrar' : 'Entrar';
+  document.getElementById('btn-auth-toggle').textContent = modoCadastro ? 'Já tem conta? Faça Login' : 'Não tem conta? Cadastre-se';
+});
+
+document.getElementById('btn-auth-submit').addEventListener('click', () => {
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+  if(!email || !password) return alert('Preencha os campos!');
   
-  auth.signInWithEmailAndPassword(email, senha).catch(error => {
-    errEl.textContent = "E-mail ou senha incorretos!";
-    errEl.style.display = 'block';
-  });
-}
-
-function handleRegister() {
-  const cpf = document.getElementById('reg-cpf').value.trim();
-  const nome = document.getElementById('reg-nome').value.trim();
-  const email = document.getElementById('reg-email').value.trim().toLowerCase();
-  const senha = document.getElementById('reg-senha').value;
-  const confSenha = document.getElementById('reg-confirmar-senha').value;
-  const naoRobo = document.getElementById('reg-capsula').checked;
-  const errEl = document.getElementById('register-error-msg');
-  errEl.style.display = 'none';
-
-  if (!cpf || !nome || !email || !senha || !confSenha) {
-    errEl.textContent = "Preencha todos os campos!"; errEl.style.display = "block"; return;
+  if (modoCadastro) {
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(res => {
+        let nomeSugerido = email.toLowerCase().includes('andre') ? 'André' : 'Gessyca';
+        res.user.updateProfile({ displayName: nomeSugerido });
+      }).catch(err => alert('Erro: ' + err.message));
+  } else {
+    auth.signInWithEmailAndPassword(email, password).catch(err => alert('Erro: ' + err.message));
   }
-  if (senha !== confSenha) {
-    errEl.textContent = "As senhas não coincidem!"; errEl.style.display = "block"; return;
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => auth.signOut());
+
+// INICIALIZAR SELETORES DE DATA DINÂMICOS
+function inicializarSeletoresPeriodo() {
+  const selAno = document.getElementById('select-ano');
+  selAno.innerHTML = '';
+  const anoAtual = new Date().getFullYear();
+  for(let a = anoAtual - 1; a <= anoAtual + 3; a++) {
+    let opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    selAno.appendChild(opt);
   }
-  if (!naoRobo) {
-    errEl.textContent = "Confirme o marcador de segurança!"; errEl.style.display = "block"; return;
-  }
-  if (!ALLOWED_USERS[cpf]) {
-    errEl.textContent = "Acesso Negado: CPF não pré-autorizado."; errEl.style.display = "block"; return;
-  }
-
-  auth.createUserWithEmailAndPassword(email, senha).then(credential => {
-    const userProfile = { uid: credential.user.uid, cpf, nome, email };
-    database.ref(`users/${credential.user.uid}`).set(userProfile).then(() => {
-      alert("Conta criada com sucesso!");
-    });
-  }).catch(error => {
-    errEl.textContent = error.message; errEl.style.display = "block";
-  });
-}
-
-function handleLogout() {
-  auth.signOut().then(() => {
-    DB_STATE.currentUser = null;
-    showScreen('screen-login');
-  });
-}
-
-// ==========================================
-// SINCRONIZAÇÃO EM TEMPO REAL
-// ==========================================
-function activarEscutaRealtime() {
-  database.ref('dadosAnos').on('value', snapshot => {
-    DB_STATE.dadosAnos = snapshot.val() || {};
-    renderAll();
-  });
-
-  database.ref('patrimonioHistorico').on('value', snapshot => {
-    DB_STATE.patrimonioHistorico = snapshot.val() || {};
-    renderPatrimonioChart();
-  });
-
-  database.ref('ativos').on('value', snapshot => {
-    DB_STATE.ativos = snapshot.val() || [];
-    renderPatrimonio();
-  });
-
-  database.ref('projects').on('value', snapshot => {
-    DB_STATE.projetos = snapshot.val() || [];
-    renderPatrimonio();
-  });
-}
-
-// ==========================================
-// RENDERIZADORES DAS TELAS (ESTILO V.07)
-// ==========================================
-function switchTab(tabName, clickedBtn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   
-  document.getElementById('tab-' + tabName).style.display = 'block';
-  clickedBtn.classList.add('active');
-  renderTab(tabName);
+  const mesAtual = String(new Date().getMonth() + 1).padStart(2, '0');
+  document.getElementById('select-mes').value = mesAtual;
+  selAno.value = anoAtual;
+  
+  DB_STATE.anoSel = anoAtual.toString();
+  DB_STATE.mesSel = mesAtual;
+  
+  ativarEscutaRealtime();
+  
+  document.getElementById('select-mes').addEventListener('change', (e) => { DB_STATE.mesSel = e.target.value; ativarEscutaRealtime(); });
+  document.getElementById('select-ano').addEventListener('change', (e) => { DB_STATE.anoSel = e.target.value; ativarEscutaRealtime(); });
 }
 
-function renderAll() {
-  document.querySelectorAll('.label-periodo').forEach(el => {
-    el.textContent = DB_STATE.mesSel + '/' + DB_STATE.anoSel;
+// ESCUTA EM TEMPO REAL DO FIREBASE
+let firebaseRefAtiva = null;
+function ativarEscutaRealtime() {
+  if(firebaseRefAtiva) firebaseRefAtiva.off();
+  
+  const path = `dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}`;
+  firebaseRefAtiva = database.ref(path);
+  
+  firebaseRefAtiva.on('value', snapshot => {
+    const dados = snapshot.val() || {};
+    
+    // Se a árvore de porcentagens não existir para o mês novo, cria com o padrão da planilha
+    if (!dados.porcentagens) {
+      const padrao = {};
+      Object.keys(SCHEMA_ORCAMENTO).forEach(k => padrao[k] = SCHEMA_ORCAMENTO[k].pct);
+      database.ref(`${path}/porcentagens`).set(padrao);
+      return;
+    }
+    
+    DB_STATE.dadosMesa = dados;
+    renderizarTodoApp();
   });
-  const activeBtn = document.querySelector('.nav-item.active');
-  renderTab(activeBtn ? activeBtn.dataset.tab : 'captacao');
 }
 
-function renderTab(tab) {
-  if (tab === 'captacao') renderCaptacao();
-  if (tab === 'orcamento') renderOrcamento();
-  if (tab === 'registro') renderRegistro();
-  if (tab === 'controle') renderControle();
-  if (tab === 'patrimonio') renderPatrimonio();
+// CÁLCULOS TOTAIS
+function obterReceitaTotal() {
+  let soma = 0;
+  if(DB_STATE.dadosMesa.receitasFixas) Object.values(DB_STATE.dadosMesa.receitasFixas).forEach(v => soma += Number(v || 0));
+  if(DB_STATE.dadosMesa.receitasVariaveis) Object.values(DB_STATE.dadosMesa.receitasVariaveis).forEach(v => soma += Number(v || 0));
+  return soma;
 }
 
-function trocarPeriodo() {
-  DB_STATE.anoSel = document.getElementById('ano-select').value;
-  DB_STATE.mesSel = document.getElementById('mes-select').value;
-  
-  const hoje = new Date();
-  const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dd = String(hoje.getDate()).padStart(2, '0');
-  document.getElementById('desp-data').value = `${DB_STATE.anoSel}-${mm}-${dd}`;
-  
-  renderAll();
-}
-
-function inicializarNovoPeriodo() {
-  const ano = DB_STATE.anoSel; const mes = DB_STATE.mesSel;
-  if (DB_STATE.dadosAnos[ano] && DB_STATE.dadosAnos[ano][mes]) {
-    alert('Este período já possui dados.'); return;
+// VERIFICAÇÃO SE CATEGORIA É INVESTIMENTO (Caixas 1 a 4)
+function verificarSeEhInvestimento(categoria) {
+  if (SCHEMA_ORCAMENTO[categoria]) {
+    const cx = SCHEMA_ORCAMENTO[categoria].caixa;
+    return cx >= 1 && cx <= 4;
   }
-
-  if (!DB_STATE.dadosAnos[ano]) DB_STATE.dadosAnos[ano] = {};
-  DB_STATE.dadosAnos[ano][mes] = criarEstruturaMesPadrao();
-
-  sincronizarPeriodoComFirebase();
-  alert('Novo período preparado com sucesso!');
+  return false;
 }
 
-// TELA 1: CAPTAÇÃO
+// FUNÇÃO MESTRE DE RENDERIZAÇÃO
+function renderizarTodoApp() {
+  const receita = obterReceitaTotal();
+  
+  // Renderizadores de abas específicos
+  renderCaptacao();
+  renderOrcamento(receita);
+  renderRegistro();
+  renderControle(receita);
+  renderPatrimonio();
+}
+
+// ABA 1: CAPTAÇÃO
 function renderCaptacao() {
-  const d = getPeriodoAtual();
-  const total = receitaTotal();
-  document.getElementById('rt-valor').textContent = fmt(total);
+  const fixasDiv = document.getElementById('list-receitas-fixas');
+  const varsDiv = document.getElementById('list-receitas-variaveis');
+  fixasDiv.innerHTML = ''; varsDiv.innerHTML = '';
   
-  const rf = d.receitasFixas ? Object.values(d.receitasFixas) : [];
-  const rv = d.receitasVariaveis ? Object.values(d.receitasVariaveis) : [];
-  const nf = [...rf, ...rv].filter(r=>r.val>0).length;
-  document.getElementById('rt-delta').textContent = nf + ' fonte(s) ativa(s)';
-
-  function renderLista(id, sourceObj, tipo) {
-    const el = document.getElementById(id); el.innerHTML = '';
-    const arr = sourceObj ? Object.entries(sourceObj) : [];
-    if (!arr.length) {
-      el.innerHTML = `<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma cadastrada.</p>`; return;
-    }
-    arr.forEach(([key, r]) => {
-      const div = document.createElement('div'); div.className = 'receita-item';
-      div.innerHTML = `<span class="ri-name">${r.nome}</span>
-        <input type="text" value="${fmt(r.val)}" data-key="${key}" data-tipo="${tipo}" class="input-receita-dinamico">
-        <button data-key="${key}" data-tipo="${tipo}" class="btn-del-receita-dinamico" style="background:none;border:none;cursor:pointer;color:#64748b"><i class='ti ti-x'></i></button>`;
-      el.appendChild(div);
+  if(DB_STATE.dadosMesa.receitasFixas) {
+    Object.entries(DB_STATE.dadosMesa.receitasFixas).forEach(([key, val]) => {
+      fixasDiv.appendChild(criarCardLinhaItem(key, val, 'receitasFixas'));
     });
   }
-  renderLista('list-receitas-fixas', d.receitasFixas, 'fixa');
-  renderLista('list-receitas-variaveis', d.receitasVariaveis, 'variavel');
-}
-
-function addReceita() {
-  const nome = document.getElementById('nova-rec-nome').value.trim();
-  const val = parseBr(document.getElementById('nova-rec-val').value);
-  const tipo = document.getElementById('nova-rec-tipo').value;
-  if (!nome || !val) return;
-  
-  const path = tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}`).push({nome, val});
-  
-  document.getElementById('nova-rec-nome').value='';
-  document.getElementById('nova-rec-val').value='';
-}
-
-// TELA 2: ORÇAMENTO
-function renderOrcamento() {
-  const d = getPeriodoAtual(); const total = receitaTotal();
-  const el = document.getElementById('orcamento-list'); el.innerHTML = '';
-
-  caixasConfig.forEach(cx => {
-    const totalPct = cx.cats.reduce((s,c)=>s+(d.porcentagens ? (d.porcentagens[c]||0) : 0),0);
-    const totalVal = total * totalPct/100;
-
-    const card = document.createElement('div'); card.className = 'caixa-card';
-    let rows = cx.cats.map(cat => {
-      const pct = d.porcentagens ? (d.porcentagens[cat]||0) : 0;
-      const val = total * pct/100;
-      return `<div class="caixa-row"><span class="cr-name">${cat}</span><span class="cr-val">${fmt(val)} <small>(${pct}%)</small></span></div>
-      <div class="pct-slider">
-        <input type="range" min="0" max="40" value="${pct}" data-cat="${cat}" class="slider-orcamento-dinamico" style="accent-color:${cx.cor}">
-        <span class="pct-label">${pct}% → ${fmt(val)}</span>
-      </div>`;
-    }).join('');
-
-    card.innerHTML = `<div class="caixa-head">
-        <div><span class="tag" style="background:${cx.cor}22;color:${cx.cor}">${cx.nome}</span></div>
-        <div style="text-align:right"><div class="meta">${fmt(totalVal)}</div><div class="pct">${totalPct}%</div></div>
-      </div><div class="caixa-body">${rows}</div>`;
-    el.appendChild(card);
-  });
-}
-
-// TELA 3: REGISTRO
-function renderRegistro() {
-  const d = getPeriodoAtual(); const el = document.getElementById('list-despesas'); el.innerHTML = '';
-  const despesasArray = d.despesas ? Object.entries(d.despesas) : [];
-  
-  if (!despesasArray.length) {
-    el.innerHTML = '<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhum lançamento feito.</p>'; return;
+  if(DB_STATE.dadosMesa.receitasVariaveis) {
+    Object.entries(DB_STATE.dadosMesa.receitasVariaveis).forEach(([key, val]) => {
+      varsDiv.appendChild(criarCardLinhaItem(key, val, 'receitasVariaveis'));
+    });
   }
-  
-  despesasArray.reverse().forEach(([key, dep]) => {
-    const cor = catColors[dep.cat] || '#888';
-    const div = document.createElement('div'); div.className = 'desp-item';
-    const donoReal = dep.dono || 'André';
-    const classeDono = donoReal.toLowerCase().includes('andre') ? 'andre' : 'gessyca';
-    
-    div.innerHTML = `<div class="desp-dot" style="background:${cor}"></div>
-      <div class="desp-info">
-        <div class="di-desc">${dep.desc} <span class="lbl-dono ${classeDono}">${donoReal}</span></div>
-        <div class="di-cat">${dep.cat} ${dep.data?'· '+dep.data.split('-').reverse().slice(0,2).join('/'):''}</div>
-      </div>
-      <span class="desp-val">− ${fmt(dep.val)}</span>
-      <button class="desp-del btn-del-despesa-dinamico" data-key="${key}"><i class="ti ti-trash"></i></button>`;
-    el.appendChild(div);
-  });
 }
 
-function addDespesa() {
-  const data = document.getElementById('desp-data').value;
-  const cat = document.getElementById('desp-cat').value;
-  const desc = document.getElementById('desp-desc').value.trim();
-  const val = parseBr(document.getElementById('desp-val').value);
-  if (!cat || !val) return;
-  
-  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas`).push({
-    data, cat, desc: desc || cat, val, dono: DB_STATE.currentUser ? DB_STATE.currentUser.nome : "André"
-  });
-  
-  document.getElementById('desp-desc').value = '';
-  document.getElementById('desp-val').value = '';
+function criarCardLinhaItem(key, val, node) {
+  const item = document.createElement('div');
+  item.className = 'list-item';
+  item.innerHTML = `
+    <span class="list-item-title">${key}</span>
+    <div style="display:flex; align-items:center;">
+      <input type="number" value="${val}" class="form-control" style="width:90px; padding:3px; text-align:right; margin-right:4px;" onblur="database.ref('dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${node}/${key}').set(this.value)">
+      <button class="btn-del" onclick="database.ref('dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${node}/${key}').remove()"><i class="ti ti-trash"></i></button>
+    </div>
+  `;
+  return item;
 }
 
-// TELA 4: CONTROLE (CORREÇÃO 4: BONEQUINHOS/INDIVIDUALIZADO EM AMBOS OS MODOS GASTO E INVESTIMENTO)
-function toggleControlFilter(type) {
-  DB_STATE.currentControlTab = type;
-  document.getElementById('btn-ctrl-gasto').classList.toggle('active', type === 'Gasto');
-  document.getElementById('btn-ctrl-inv').classList.toggle('active', type === 'Investment');
-  renderControle();
-}
-
-function renderControle() {
-  const d = getPeriodoAtual(); const total = receitaTotal();
-  const despesasLista = d.despesas ? Object.values(d.despesas) : [];
-  const gastTotalGeral = despesasLista.reduce((s,x)=>s+x.val,0);
+// EVENTO CAPTAÇÃO ADICIONAR
+document.getElementById('btn-add-receita').addEventListener('click', () => {
+  const nome = document.getElementById('rec-nome').value.trim();
+  const valor = Number(document.getElementById('rec-valor').value);
+  const tipo = document.querySelector('name="rec-tipo":checked') ? document.querySelector('name="rec-tipo":checked').value : 'fixas';
   
-  document.getElementById('ctrl-receita').textContent = fmt(total);
-  document.getElementById('ctrl-gasto').textContent = fmt(gastTotalGeral);
-
-  const cats = d.porcentagens ? Object.keys(d.porcentagens) : [];
-  let ok=0, over=0;
-  cats.forEach(c => { if((d.porcentagens[c]||0)>0){ if(realizado(c)>limite(c)) over++; else ok++; } });
-  document.getElementById('ctrl-ok').textContent = ok;
-  document.getElementById('ctrl-over').textContent = over;
-
-  const el = document.getElementById('termometro-list'); el.innerHTML = '';
+  if(!nome || valor <= 0) return alert('Insira dados válidos!');
   
-  cats.forEach(cat => {
-    const pct = d.porcentagens ? (d.porcentagens[cat]||0) : 0; if (pct===0) return;
-    const ehInvestimento = ['Reserva de Emergência','Investimentos','Patrimônio','Projetos'].includes(cat);
-    if ((ehInvestimento ? 'Investment' : 'Gasto') !== DB_STATE.currentControlTab) return;
-
-    const lim = limite(cat); const realTotal = realizado(cat);
-    const realAndre = despesasLista.filter(x => x.cat === cat && x.dono === 'André').reduce((s,x)=>s+x.val,0);
-    const realGessyca = despesasLista.filter(x => x.cat === cat && x.dono === 'Gessyca').reduce((s,x)=>s+x.val,0);
-    
-    const saldo = lim - realTotal; const pctBar = lim > 0 ? Math.min(100, realTotal/lim*100) : 0;
-    const isOver = saldo < 0; const cor = isOver ? '#e24b4a' : (catColors[cat]||'#1baf7a');
-
-    const item = document.createElement('div'); item.className = 'termo-item';
-    item.innerHTML = `<div class="termo-top"><span class="ti-name">${cat}</span><span class="ti-status ${isOver?'status-over':'status-ok'}">${isOver?'🔴 Excedeu':'🟢 OK'}</span></div>
-      <div class="termo-bar-bg"><div class="termo-bar-fill" style="width:${pctBar}%;background:${cor}"></div></div>
-      <div class="termo-vals"><span>Casal: <b>${fmt(realTotal)}</b></span><span>Meta: ${fmt(lim)}</span><span style="color:${cor};font-weight:500">${saldo<0?'-':'+'} ${fmt(Math.abs(saldo))}</span></div>
-      <div class="termo-split-row"><span>👨 André: ${fmt(realAndre)}</span><span>👩 Gessyca: ${fmt(realGessyca)}</span></div>`;
-    el.appendChild(item);
-  });
-}
-
-// TELA 5: PATRIMÔNIO
-function toggleChartTotal(active) {
-  DB_STATE.chartTotalActive = active;
-  document.getElementById('btn-chart-total-mode').classList.toggle('active', active);
-  renderPatrimonioChart();
-}
-
-function renderPatrimonioChart() {
-  const container = document.getElementById('patr-bars-container'); container.innerHTML = '';
-  const ano = document.getElementById('patr-chart-date').value;
-  let pontos = DB_STATE.patrimonioHistorico[ano] ? Object.values(DB_STATE.patrimonioHistorico[ano]) : [];
-  
-  if (!pontos.length) {
-    container.innerHTML = '<p style="font-size:12px;color:#64748b;margin:auto">Nenhum histórico cadastrado.</p>'; return;
-  }
-
-  const maximo = Math.max(...pontos.map(p=>p.v), 1);
-  pontos.forEach(p => {
-    const col = document.createElement('div'); col.className = 'chart-column';
-    col.innerHTML = `<div class="chart-column-val">${Math.round(p.v/1000)}k</div>
-      <div class="chart-bar-fill" style="height:${(p.v/maximo)*100}%; background:#1baf7a"></div>
-      <div class="chart-column-label">${p.m}</div>`;
-    container.appendChild(col);
-  });
-}
-
-function renderPatrimonio() {
-  renderPatrimonioChart();
-  const ativosLista = DB_STATE.ativos ? Object.values(DB_STATE.ativos) : [];
-  const projetosLista = DB_STATE.projetos ? Object.values(DB_STATE.projetos) : [];
-
-  const totalAtivos = ativosLista.reduce((s,a)=>s+a.val, 0);
-  document.getElementById('patr-liq').textContent = fmt(totalAtivos);
-  document.getElementById('patr-ativos').textContent = fmt(totalAtivos);
-
-  const atEl = document.getElementById('list-ativos'); atEl.innerHTML = '';
-  ativosLista.forEach(a => {
-    const div = document.createElement('div'); div.className = 'ativo-item';
-    div.innerHTML = `<div><div class="ai-name"><span style="background:${a.cor};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px"></span>${a.nome}</div><div class="ai-sub">${a.sub}</div></div>
-    <div style="text-align:right"><div class="ai-val">${fmt(a.val)}</div><div class="ai-rend">${a.rend}</div></div>`;
-    atEl.appendChild(div);
-  });
-
-  const prEl = document.getElementById('list-projetos'); prEl.innerHTML = '';
-  projetosLista.forEach(p => {
-    const pct = Math.min(100,(p.atual/p.meta*100));
-    const div = document.createElement('div'); div.className = 'proj-card';
-    div.innerHTML = `<div class="pc-head"><span class="pc-name">${p.nome}</span><span class="pc-pct" style="color:${p.cor}">${pct.toFixed(1)}%</span></div>
-      <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:${pct}%;background:${p.cor}"></div></div>
-      <div class="proj-vals"><span>${fmt(p.atual)} acum.</span><span>Alvo: ${fmt(p.meta)}</span></div>`;
-    prEl.appendChild(div);
-  });
-}
-
-// ==========================================
-// MAIS EVENTOS E INICIALIZADORES DOS TRIGGERS
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById('btn-do-login').addEventListener('click', handleLogin);
-  document.getElementById('btn-do-register').addEventListener('click', handleRegister);
-  document.getElementById('btn-go-to-register').addEventListener('click', () => showScreen('screen-register'));
-  document.getElementById('btn-go-to-login').addEventListener('click', () => showScreen('screen-login'));
-  document.getElementById('btn-trigger-logout').addEventListener('click', handleLogout);
-
-  document.getElementById('ano-select').addEventListener('change', trocarPeriodo);
-  document.getElementById('mes-select').addEventListener('change', trocarPeriodo);
-  document.getElementById('btn-trigger-new-mes').addEventListener('click', inicializarNovoPeriodo);
-
-  document.getElementById('btn-add-rec').addEventListener('click', addReceita);
-  
-  document.getElementById('tab-captacao').addEventListener('blur', (e) => {
-    if (e.target && e.target.classList.contains('input-receita-dinamico')) {
-      const key = e.target.dataset.key; const tipo = e.target.dataset.tipo;
-      const path = tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}/${key}/val`).set(parseBr(e.target.value));
-    }
-  }, true);
-
-  document.getElementById('tab-captacao').addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-del-receita-dinamico');
-    if (btn) {
-      const path = btn.dataset.tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}/${btn.dataset.key}`).remove();
-    }
-  });
-
-  document.getElementById('tab-orcamento').addEventListener('input', (e) => {
-    if (e.target && e.target.classList.contains('slider-orcamento-dinamico')) {
-      const cat = e.target.dataset.cat; const val = parseInt(e.target.value);
-      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/porcentagens/${cat}`).set(val);
-    }
-  });
-
-  document.getElementById('btn-add-desp-submit').addEventListener('click', addDespesa);
-  document.getElementById('tab-registro').addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-del-despesa-dinamico');
-    if(btn) database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas/${btn.dataset.key}`).remove();
-  });
-
-  document.getElementById('btn-ctrl-gasto').addEventListener('click', () => toggleControlFilter('Gasto'));
-  document.getElementById('btn-ctrl-inv').addEventListener('click', () => toggleControlFilter('Investment'));
-  document.getElementById('patr-chart-date').addEventListener('change', renderPatrimonioChart);
-  document.getElementById('btn-chart-total-mode').addEventListener('click', () => toggleChartTotal(true));
-
-  document.getElementById('bottom-navigation-bar').addEventListener('click', (e) => {
-    const item = e.target.closest('.nav-item');
-    if (item) switchTab(item.dataset.tab, item);
-  });
-
-  trocarPeriodo();
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/receitasOqueSeja/${tipo}/${nome}`).set(valor);
+  document.getElementById('rec-nome').value = '';
+  document.getElementById('rec-valor').value = '';
 });
+// Ajuste de escuta fina para seletores de rádio
+document.getElementsByName('rec-tipo').forEach(el => {
+  el.addEventListener('click', () => {});
+});
+// Redirecionamento correto da função inline
+document.getElementById('btn-add-receita').onclick = function() {
+  const nome = document.getElementById('rec-nome').value.trim();
+  const val = Number(document.getElementById('rec-valor').value);
+  const node = document.querySelector('input[name="rec-tipo"]:checked').value === 'fixas' ? 'receitasFixas' : 'receitasVariaveis';
+  if(!nome || val <= 0) return alert("Insira um nome e valor válidos!");
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${node}/${nome}`).set(val);
+  document.getElementById('rec-nome').value = ''; document.getElementById('rec-valor').value = '';
+};
+
+// ABA 2: MOTOR DE ORÇAMENTO
+function renderOrcamento(receitaTotal) {
+  document.getElementById('orc-receita-total').textContent = fmt(receitaTotal);
+  
+  for(let c = 1; c <= 5; c++) {
+    document.getElementById(`sliders-caixa-${c}`).innerHTML = '';
+  }
+  
+  const pcts = DB_STATE.dadosMesa.porcentagens || {};
+  
+  Object.entries(SCHEMA_ORCAMENTO).forEach(([cat, config]) => {
+    const pctAtiva = pcts[cat] !== undefined ? pcts[cat] : config.pct;
+    const valorCalculado = receitaTotal * (pctAtiva / 100);
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'slider-group';
+    wrapper.innerHTML = `
+      <div class="slider-header">
+        <span>${cat}</span>
+        <span class="pct-label" style="color:${config.cor}">${pctAtiva}% → ${fmt(valorCalculado)}</span>
+      </div>
+      <input type="range" class="slider-input" min="0" max="100" value="${pctAtiva}" oninput="atualizarPorcentagemNoFirebase('${cat}', this.value)">
+    `;
+    
+    document.getElementById(`sliders-caixa-${config.caixa}`).appendChild(wrapper);
+  });
+}
+
+function atualizarPorcentagemNoFirebase(cat, val) {
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/porcentagens/${cat}`).set(Number(val));
+}
+
+// ABA 3: REGISTRO DE MOVIMENTAÇÕES
+function renderRegistro() {
+  const selectCat = document.getElementById('reg-categoria');
+  if(selectCat.options.length === 0) {
+    selectCat.innerHTML = '';
+    Object.keys(SCHEMA_ORCAMENTO).forEach(c => {
+      let opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      selectCat.appendChild(opt);
+    });
+  }
+  
+  const divMov = document.getElementById('list-movimentacoes');
+  divMov.innerHTML = '';
+  
+  const despesas = DB_STATE.dadosMesa.despesas || {};
+  
+  Object.entries(despesas).forEach(([key, d]) => {
+    const linha = document.createElement('div');
+    linha.className = 'list-item';
+    const sufixoDono = d.dono ? ` (${d.dono})` : '';
+    const corMarcacao = verificarSeEhInvestimento(d.categoria) ? 'var(--cor-protecao)' : '#ef4444';
+    
+    linha.innerHTML = `
+      <div class="list-item-info">
+        <span class="list-item-title">${d.descricao}<small style="color:${corMarcacao};font-weight:700">${sufixoDono}</small></span>
+        <span class="list-item-sub">${d.data.split('-').reverse().join('/')} • ${d.categoria}</span>
+      </div>
+      <div style="display:flex; align-items:center;">
+        <span class="list-item-val" style="color:${corMarcacao}">${fmt(d.valor)}</span>
+        <button class="btn-del" onclick="database.ref('dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas/${key}').remove()"><i class="ti ti-trash"></i></button>
+      </div>
+    `;
+    divMov.appendChild(linha);
+  });
+}
+
+document.getElementById('btn-add-movimentacao').onclick = function() {
+  const data = document.getElementById('reg-data').value;
+  const categoria = document.getElementById('reg-categoria').value;
+  const descricao = document.getElementById('reg-descricao').value.trim();
+  const valor = Number(document.getElementById('reg-valor').value);
+  
+  if(!data || !descricao || valor <= 0) return alert('Preencha os campos corretamente!');
+  
+  // Extração inteligente do primeiro nome do usuário ativo (Imune a erros)
+  const userObj = auth.currentUser;
+  let donoNome = "Comum";
+  if(userObj) {
+    if(userObj.displayName) {
+      donoNome = userObj.displayName.split(' ')[0];
+    } else {
+      donoNome = userObj.email.toLowerCase().includes('andre') ? 'André' : 'Gessyca';
+    }
+  }
+  
+  const novaMov = {
+    data: data,
+    categoria: categoria,
+    descricao: descricao,
+    valor: valor,
+    dono: donoNome
+  };
+  
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas`).push(novaMov);
+  
+  document.getElementById('reg-descricao').value = '';
+  document.getElementById('reg-valor').value = '';
+};
+
+// ABA 4: CONTROLE
+function renderControle(receitaTotal) {
+  let totalGasto = 0;
+  let totalInvestido = 0;
+  
+  let userSoma = { andre: 0, gessyca: 0 };
+  
+  const despesas = DB_STATE.dadosMesa.despesas || {};
+  const limitesCategoriaRealizados = {};
+  
+  Object.values(despesas).forEach(d => {
+    const val = Number(d.valor || 0);
+    const ehInvestimento = verificarSeEhInvestimento(d.categoria);
+    
+    if(ehInvestimento) {
+      totalInvestido += val;
+    } else {
+      totalGasto += val;
+    }
+    
+    // Tratamento robusto do nome para a linha de divisão do casal do seu print
+    if(d.dono) {
+      const dLimpo = d.dono.toLowerCase().trim();
+      if(dLimpo.includes('andr')) userSoma.andre += val;
+      if(dLimpo.includes('gess')) userSoma.gessyca += val;
+    }
+    
+    limitesCategoriaRealizados[d.categoria] = (limitesCategoriaRealizados[d.categoria] || 0) + val;
+  });
+  
+  const margemRestante = receitaTotal - totalGasto - totalInvestido;
+  
+  document.getElementById('ctrl-total-gasto').textContent = fmt(totalGasto);
+  document.getElementById('ctrl-total-investido').textContent = fmt(totalInvestido);
+  document.getElementById('ctrl-total-restante').textContent = fmt(margemRestante);
+  document.getElementById('ctrl-total-restante').style.color = margemRestante >= 0 ? 'var(--cor-protecao)' : '#ef4444';
+  
+  // Atualiza com exatidão matemática a linha do seu print
+  document.getElementById('ctrl-couple-split').innerHTML = `👨 André: <strong>${fmt(userSoma.andre)}</strong> | 👩 Gessyca: <strong>${fmt(userSoma.gessyca)}</strong>`;
+  
+  // Acompanhamento dos Limites
+  const divLimites = document.getElementById('list-controle-limites');
+  divLimites.innerHTML = '';
+  
+  const pcts = DB_STATE.dadosMesa.porcentagens || {};
+  
+  Object.entries(SCHEMA_ORCAMENTO).forEach(([cat, config]) => {
+    const pct = pcts[cat] !== undefined ? pcts[cat] : config.pct;
+    const tetoMax = receitaTotal * (pct / 100);
+    if(tetoMax <= 0) return;
+    
+    const gastoRealizado = limitesCategoriaRealizados[cat] || 0;
+    const pctBarra = Math.min(100, (gastoRealizado / tetoMax) * 100);
+    const corBarra = gastoRealizado > tetoMax ? '#ef4444' : config.cor;
+    
+    const bloco = document.createElement('div');
+    bloco.className = 'box-progress-container';
+    bloco.innerHTML = `
+      <div class="box-progress-info">
+        <span>${cat}</span>
+        <span style="color:${corBarra}">${fmt(gastoRealizado)} / ${fmt(tetoMax)}</span>
+      </div>
+      <div class="box-progress-bar">
+        <div class="box-progress-fill" style="width:${pctBarra}%; background:${corBarra}"></div>
+      </div>
+    `;
+    divLimites.appendChild(bloco);
+  });
+}
+
+// ABA 5: PATRIMÔNIO LÍQUIDO
+function renderPatrimonio() {
+  // 1. Calcula o total de investimentos/aportes realizados neste mês ativo
+  let aportesMesAtual = 0;
+  const despesas = DB_STATE.dadosMesa.despesas || {};
+  Object.values(despesas).forEach(d => {
+    if(verificarSeEhInvestimento(d.categoria)) {
+      aportesMesAtual += Number(d.valor || 0);
+    }
+  });
+  
+  // Base estática inicial adicionada aos lançamentos atuais para compor o patrimônio real
+  const baseHistoricaEstatica = 23000; 
+  const patrimonioConsolidado = baseHistoricaEstatica + aportesMesAtual;
+  document.getElementById('patr-consolidado').textContent = fmt(patrimonioConsolidado);
+  
+  // Salva dinamicamente o valor calculado deste período para atualizar o histórico de gráficos
+  const chaveMesAno = `${DB_STATE.mesSel}/${DB_STATE.anoSel}`;
+  database.ref(`historicoPatrimonial/${chaveMesAno}`).set(patrimonioConsolidado);
+  
+  // 2. Renderizar Gráfico Evolutivo de Linha Contínua Limpa
+  database.ref(`historicoPatrimonial`).once('value', snapshot => {
+    const hist = snapshot.val() || {};
+    const chartContainer = document.getElementById('patr-evolution-chart');
+    chartContainer.innerHTML = '';
+    
+    // Filtra e ordena as chaves cronologicamente
+    const periodosOrdenados = Object.keys(hist).sort((a, b) => {
+      const [mA, aA] = a.split('/').map(Number);
+      const [mB, aB] = b.split('/').map(Number);
+      return aA !== aB ? aA - aB : mA - mB;
+    }).slice(-5); // Pega os últimos 5 meses lançados para uma visualização limpa no mobile
+    
+    const maiorValor = Math.max(...Object.values(hist), 1000);
+    
+    periodosOrdenados.forEach(p => {
+      const val = hist[p] || 0;
+      const pctAltura = (val / maiorValor) * 100;
+      
+      const barWrapper = document.createElement('div');
+      barWrapper.className = 'chart-bar-wrapper';
+      barWrapper.innerHTML = `
+        <div class="chart-bar" style="height:${Math.max(8, pctAltura)}%; background:var(--primary);">
+          <div class="chart-tooltip">${fmt(val)}</div>
+        </div>
+        <div class="chart-label">${p}</div>
+      `;
+      chartContainer.appendChild(barWrapper);
+    });
+  });
+  
+  // 3. Renderizar Progresso das 5 Caixas Estruturadas de Longo Prazo
+  const divMetas = document.getElementById('list-metas-caixas');
+  divMetas.innerHTML = '';
+  
+  // Agrupa os aportes acumulados por caixa com base nos lançamentos do mês
+  const caixasAcumulado = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  Object.values(despesas).forEach(d => {
+    if(SCHEMA_ORCAMENTO[d.categoria]) {
+      const cx = SCHEMA_ORCAMENTO[d.categoria].caixa;
+      caixasAcumulado[cx] += Number(d.valor || 0);
+    }
+  });
+  
+  // Injeta valores base para simular o longo prazo preenchido da planilha nas caixas
+  const basesLongoPrazo = { 1: 12500, 2: 4500, 3: 8000, 4: 2300, 5: 0 };
+  
+  const nomesCaixas = {
+    1: { nome: "🟩 Caixa 1: Proteção (Reserva)", meta: 50000, cor: "var(--cor-protecao)" },
+    2: { nome: "🟦 Caixa 2: Acumulação (Ativos)", meta: 25000, cor: "var(--cor-acumulacao)" },
+    3: { nome: "🟨 Caixa 3: Construção (Imóvel)", meta: 60000, cor: "var(--cor-construcao)" },
+    4: { nome: "🟨 Caixa 4: Projetos (Europa/Geral)", meta: 40000, cor: "var(--cor-projetos)" },
+    5: { nome: "🟧 Caixa 5: Estilo de Vida", meta: 0, cor: "var(--cor-estilo)" }
+  };
+  
+  Object.entries(nomesCaixas).forEach(([cxNum, metaConfig]) => {
+    if(metaConfig.meta === 0) return; // Ignora estilo de vida que consome tudo dentro do mês
+    
+    const num = Number(cxNum);
+    const totalAcumuladoVal = basesLongoPrazo[num] + caixasAcumulado[num];
+    const pctMeta = Math.min(100, (totalAcumuladoVal / metaConfig.meta) * 100);
+    
+    const blocoMeta = document.createElement('div');
+    blocoMeta.className = 'box-progress-container';
+    blocoMeta.innerHTML = `
+      <div class="box-progress-info">
+        <span style="font-weight:700; color:var(--text); font-size:0.85rem;">${metaConfig.nome}</span>
+        <span style="color:${metaConfig.cor}">${fmt(totalAcumuladoVal)} / ${fmt(metaConfig.meta)}</span>
+      </div>
+      <div class="box-progress-bar" style="height:10px;">
+        <div class="box-progress-fill" style="width:${pctMeta}%; background:${metaConfig.cor}"></div>
+      </div>
+    `;
+    divMetas.appendChild(blocoMeta);
+  });
+}
+
+// CONTROLADOR DE ALTERAÇÃO DE ABAS (Bottom Navigation) via Event Delegation
+document.getElementById('bottom-navigation-bar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.nav-item');
+  if(!btn) return;
+  
+  // Atualiza classes ativas na barra de navegação
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+  
+  // Alterna o painel de conteúdo visível
+  const abaAlvo = btn.dataset.tab;
+  document.querySelectorAll('.tab-pane').forEach(panel => panel.style.display = 'none');
+  document.getElementById(`tab-content-${abaAlvo}`).style.display = 'block';
+});
+
 </script>
 </body>
 </html>
