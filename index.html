@@ -46,9 +46,7 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
 .topbar-selectors { display: flex; align-items: center; gap: 6px; }
 .topbar-selectors select { font-size: 13px; font-weight: 500; color: #0f172a; background: #fff; border: 0.5px solid #cbd5e1; border-radius: 8px; padding: 5px 8px; cursor: pointer; outline: none; }
 .btn-new-mes { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: none; border: 0.5px solid #1baf7a; color: #1baf7a; border-radius: 8px; cursor: pointer; font-size: 14px; }
-.btn-new-mes:hover { background: #e1f5ee; }
 .btn-logout { font-size: 16px; color: #64748b; background: none; border: none; cursor: pointer; display: flex; align-items: center; margin-left: 4px; }
-.btn-logout:hover { color: #334155; }
 
 /* Bottom nav */
 .bottom-nav { display: flex; background: #f8fafc; border-top: 0.5px solid #e2e8f0; flex-shrink: 0; }
@@ -74,7 +72,6 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
 .receitas-list h3 { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
 .receita-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 0.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
 .receita-item .ri-name { font-size: 14px; color: #1e293b; }
-.receita-item .ri-val { font-size: 14px; font-weight: 500; color: #1baf7a; }
 .receita-item input[type=text] { border: none; background: transparent; font-size: 14px; color: #1e293b; width: 120px; outline: none; text-align: right; }
 .add-receita-row { display: flex; gap: 8px; margin-top: 10px; }
 .add-receita-row input { flex: 1; padding: 8px 10px; font-size: 13px; border: 0.5px solid #cbd5e1; border-radius: 8px; background: #fff; color: #1e293b; min-width: 0; }
@@ -186,8 +183,8 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
   <div class="screen auth-screen active" id="screen-login">
     <div class="auth-logo">
       <div class="auth-logo-mark"><i class="ti ti-report-money" aria-hidden="true"></i></div>
-      <div class="auth-title">Entrar</div>
-      <div class="auth-sub">Controle inteligente das suas 4 caixas</div>
+      <div class="auth-title">Meu Financeiro</div>
+      <div class="auth-sub">Seu aplicativo de finanças profissional</div>
     </div>
     <div class="auth-card">
       <div class="auth-err" id="login-error-msg">E-mail ou senha incorretos!</div>
@@ -256,13 +253,9 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
       </div>
       <div class="topbar-selectors">
         <select id="ano-select">
-          <option value="2024">2024</option>
           <option value="2025">2025</option>
           <option value="2026" selected>2026</option>
           <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
         </select>
         
         <select id="mes-select">
@@ -331,7 +324,7 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
 
       <div id="tab-registro" class="tab-content" style="display:none">
         <div class="section-head">
-          <h2>Registro de despesas</h2>
+          <h2>Registro Financeiro</h2>
           <p>Os lançamentos entram na carteira de quem está logado</p>
         </div>
         <div class="desp-form">
@@ -351,7 +344,7 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
             <input type="text" id="desp-desc" placeholder="Descrição">
             <input type="text" id="desp-val" placeholder="R$ 0,00">
           </div>
-          <button class="btn-add-desp" id="btn-add-desp-submit">Registrar despesa</button>
+          <button class="btn-add-desp" id="btn-add-desp-submit">Registrar</button>
         </div>
         <div class="desp-lista">
           <h3>Lançamentos — <span class="label-periodo">...</span></h3>
@@ -407,14 +400,8 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
 
         <div class="patr-chart-controls">
           <select id="patr-chart-date">
-            <option value="2030">Ano Projetado (2030)</option>
-            <option value="2029">Ano Projetado (2029)</option>
-            <option value="2028">Ano Projetado (2028)</option>
-            <option value="2027">Ano Projetado (2027)</option>
-            <option value="2026" selected>Ano Atual (2026)</option>
+            <option value="2026" selected>Ano Ativo (2026)</option>
             <option value="2025">Ano Anterior (2025)</option>
-            <option value="2024">Histórico (2024)</option>
-            <option value="2023">Histórico (2023)</option>
           </select>
           <button class="btn-chart-total" id="btn-chart-total-mode">Ver Total Geral</button>
         </div>
@@ -434,14 +421,14 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
     </div>
 
     <div class="bottom-nav" id="bottom-navigation-bar">
-      <button class="nav-item active" data-tab="captacao" aria-label="Captação">
+      <button class="nav-item active" data-tab="captacao" aria-label="Receitas">
         <i class="ti ti-wallet" aria-hidden="true"></i><span>Receitas</span>
       </button>
       <button class="nav-item" data-tab="orcamento" aria-label="Orçamento">
         <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i><span>Orçamento</span>
       </button>
       <button class="nav-item" data-tab="registro" aria-label="Registro">
-        <i class="ti ti-plus-circle" aria-hidden="true"></i><span>Registro</span>
+        <i class="ti ti-edit" aria-hidden="true"></i><span>Registro</span>
       </button>
       <button class="nav-item" data-tab="controle" aria-label="Controle">
         <i class="ti ti-chart-bar" aria-hidden="true"></i><span>Controle</span>
@@ -455,7 +442,7 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
 
 <script>
 // ==========================================
-// CONFIGURAÇÃO DO FIREBASE (INSERIDA DENTRO DO APP)
+// CONFIGURAÇÃO DO FIREBASE (PRODUÇÃO/SERVIDOR)
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyACW4Q-uL18usP4z7PTwsGhoAnT-aBfInE",
@@ -468,13 +455,12 @@ const firebaseConfig = {
   measurementId: "G-0D6N4N1VPQ"
 };
 
-// Inicializa Firebase globalmente
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
 
 // ==========================================
-// CONFIGURAÇÕES E ESTADOS INICIAIS (PADRÕES)
+// CONFIGURAÇÕES E ESTADOS INICIAIS
 // ==========================================
 const fmt = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 const parseBr = s => parseFloat(String(s).replace(/[R$\s.]/g,'').replace(',','.')) || 0;
@@ -512,17 +498,18 @@ let DB_STATE = {
   projetos: []
 };
 
+// CORREÇÃO 2: ATUALIZADO EXATAMENTE COM OS VALORES PADRÕES DA V0.7 / PLANILHA
 function criarEstruturaMesPadrao() {
   return {
-    receitasFixas: [],
-    receitasVariaveis: [],
+    receitasFixas: {},
+    receitasVariaveis: {},
     porcentagens: {
-      'Reserva de Emergência':9, 'Investimentos':8, 'Patrimônio':5, 'Projetos':5,
-      'Moradia':20, 'Alimentação':11, 'Transporte':4, 'Saúde':2,
-      'Contas fixas':5, 'Educação':3, 'Financiamento carro':8,
-      'Lazer':10, 'Compras':10
+      'Reserva de Emergência': 5, 'Investimentos': 5, 'Patrimônio': 10, 'Projetos': 10,
+      'Moradia': 23, 'Alimentação': 11, 'Transporte': 5, 'Saúde': 2,
+      'Contas fixas': 7, 'Educação': 2, 'Financiamento carro': 10,
+      'Lazer': 5, 'Compras': 5
     },
-    despesas: []
+    despesas: {}
   };
 }
 
@@ -536,7 +523,6 @@ function getPeriodoAtual() {
   return DB_STATE.dadosAnos[a][m];
 }
 
-// Salva as alterações do período atual de volta ao Firebase Database
 function sincronizarPeriodoComFirebase() {
   const a = DB_STATE.anoSel;
   const m = DB_STATE.mesSel;
@@ -544,7 +530,7 @@ function sincronizarPeriodoComFirebase() {
 }
 
 // ==========================================
-// LOGICA DE REGRAS DE NEGÓCIO / CÁLCULOS
+// REGRAS DE NEGÓCIO DA V.07
 // ==========================================
 function receitaTotal() {
   const d = getPeriodoAtual();
@@ -566,17 +552,15 @@ function realizado(cat) {
 }
 
 // ==========================================
-// GERENCIADOR DE TELAS E INTERAÇÕES (AUTENTICAÇÃO)
+// SISTEMA DE AUTENTICAÇÃO E CADASTRO VIA CPF
 // ==========================================
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screenId).classList.add('active');
 }
 
-// Listener de Estado de Autenticação do Firebase
 auth.onAuthStateChanged(user => {
   if (user) {
-    // Busca informações adicionais do usuário logado na árvore /users
     database.ref(`users/${user.uid}`).once('value').then(snapshot => {
       const userData = snapshot.val();
       if (userData) {
@@ -584,7 +568,7 @@ auth.onAuthStateChanged(user => {
         document.getElementById('app-user-logged').textContent = userData.nome;
         document.getElementById('lbl-form-dono').textContent = userData.nome;
         showScreen('screen-main');
-        ativarEscutaRealtime();
+        activarEscutaRealtime();
       }
     });
   } else {
@@ -596,7 +580,6 @@ function handleLogin() {
   const email = document.getElementById('inp-email').value.trim().toLowerCase();
   const senha = document.getElementById('inp-senha').value;
   const errEl = document.getElementById('login-error-msg');
-  
   errEl.style.display = 'none';
   
   auth.signInWithEmailAndPassword(email, senha).catch(error => {
@@ -613,66 +596,42 @@ function handleRegister() {
   const confSenha = document.getElementById('reg-confirmar-senha').value;
   const naoRobo = document.getElementById('reg-capsula').checked;
   const errEl = document.getElementById('register-error-msg');
-
   errEl.style.display = 'none';
 
   if (!cpf || !nome || !email || !senha || !confSenha) {
-    errEl.textContent = "Preencha todos os campos!";
-    errEl.style.display = "block";
-    return;
+    errEl.textContent = "Preencha todos os campos!"; errEl.style.display = "block"; return;
   }
-
   if (senha !== confSenha) {
-    errEl.textContent = "As senhas não coincidem!";
-    errEl.style.display = "block";
-    return;
+    errEl.textContent = "As senhas não coincidem!"; errEl.style.display = "block"; return;
   }
-
   if (!naoRobo) {
-    errEl.textContent = "Confirme que você não é um robô!";
-    errEl.style.display = "block";
-    return;
+    errEl.textContent = "Confirme o marcador de segurança!"; errEl.style.display = "block"; return;
   }
-
-  // Validação Estrita baseada na lista pré-autorizada do Casal
   if (!ALLOWED_USERS[cpf]) {
-    errEl.textContent = "Acesso Negado: CPF não autorizado para criação de conta.";
-    errEl.style.display = "block";
-    return;
+    errEl.textContent = "Acesso Negado: CPF não pré-autorizado."; errEl.style.display = "block"; return;
   }
 
   auth.createUserWithEmailAndPassword(email, senha).then(credential => {
     const userProfile = { uid: credential.user.uid, cpf, nome, email };
-    // Registra o perfil em /users/uid
     database.ref(`users/${credential.user.uid}`).set(userProfile).then(() => {
-      alert("Conta criada com sucesso! Você já foi conectado automaticamente.");
-      document.getElementById('reg-cpf').value = '';
-      document.getElementById('reg-nome').value = '';
-      document.getElementById('reg-email').value = '';
-      document.getElementById('reg-senha').value = '';
-      document.getElementById('reg-confirmar-senha').value = '';
-      document.getElementById('reg-capsula').checked = false;
+      alert("Conta criada com sucesso!");
     });
   }).catch(error => {
-    errEl.textContent = "Erro ao criar conta: " + error.message;
-    errEl.style.display = "block";
+    errEl.textContent = error.message; errEl.style.display = "block";
   });
 }
 
 function handleLogout() {
   auth.signOut().then(() => {
     DB_STATE.currentUser = null;
-    document.getElementById('inp-email').value = '';
-    document.getElementById('inp-senha').value = '';
     showScreen('screen-login');
   });
 }
 
 // ==========================================
-// CONEXÃO DE SINCRONIZAÇÃO EM TEMPO REAL COM DATABASE
+// SINCRONIZAÇÃO EM TEMPO REAL
 // ==========================================
 function activarEscutaRealtime() {
-  // Sincroniza dinamicamente toda a base estrutural de transações
   database.ref('dadosAnos').on('value', snapshot => {
     DB_STATE.dadosAnos = snapshot.val() || {};
     renderAll();
@@ -688,14 +647,14 @@ function activarEscutaRealtime() {
     renderPatrimonio();
   });
 
-  database.ref('projetos').on('value', snapshot => {
+  database.ref('projects').on('value', snapshot => {
     DB_STATE.projetos = snapshot.val() || [];
     renderPatrimonio();
   });
 }
 
 // ==========================================
-// MOTORES VISUAIS DE RENDERIZAÇÃO DE INTERFACE
+// RENDERIZADORES DAS TELAS (ESTILO V.07)
 // ==========================================
 function switchTab(tabName, clickedBtn) {
   document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
@@ -710,13 +669,8 @@ function renderAll() {
   document.querySelectorAll('.label-periodo').forEach(el => {
     el.textContent = DB_STATE.mesSel + '/' + DB_STATE.anoSel;
   });
-  
   const activeBtn = document.querySelector('.nav-item.active');
-  if (activeBtn) {
-    renderTab(activeBtn.dataset.tab);
-  } else {
-    renderTab('captacao');
-  }
+  renderTab(activeBtn ? activeBtn.dataset.tab : 'captacao');
 }
 
 function renderTab(tab) {
@@ -732,47 +686,27 @@ function trocarPeriodo() {
   DB_STATE.mesSel = document.getElementById('mes-select').value;
   
   const hoje = new Date();
-  const mesFormatado = String(hoje.getMonth() + 1).padStart(2, '0');
-  const diaFormatado = String(hoje.getDate()).padStart(2, '0');
-  document.getElementById('desp-data').value = `${DB_STATE.anoSel}-${mesFormatado}-${diaFormatado}`;
+  const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoje.getDate()).padStart(2, '0');
+  document.getElementById('desp-data').value = `${DB_STATE.anoSel}-${mm}-${dd}`;
   
   renderAll();
 }
 
 function inicializarNovoPeriodo() {
-  const ano = DB_STATE.anoSel;
-  const mes = DB_STATE.mesSel;
-  
+  const ano = DB_STATE.anoSel; const mes = DB_STATE.mesSel;
   if (DB_STATE.dadosAnos[ano] && DB_STATE.dadosAnos[ano][mes]) {
-    alert('Este período (' + mes + '/' + ano + ') já possui dados ou foi inicializado.');
-    return;
-  }
-
-  let baseOriginal = null;
-  const anosDisponiveis = Object.keys(DB_STATE.dadosAnos);
-  if (anosDisponiveis.length > 0) {
-    const ultimoAno = anosDisponiveis[anosDisponiveis.length - 1];
-    const mesesDisponiveis = Object.keys(DB_STATE.dadosAnos[ultimoAno]);
-    if (mesesDisponiveis.length > 0) {
-      const ultimoMes = mesesDisponiveis[mesesDisponiveis.length - 1];
-      baseOriginal = DB_STATE.dadosAnos[ultimoAno][ultimoMes];
-    }
+    alert('Este período já possui dados.'); return;
   }
 
   if (!DB_STATE.dadosAnos[ano]) DB_STATE.dadosAnos[ano] = {};
-  
-  DB_STATE.dadosAnos[ano][mes] = {
-    receitasFixas: baseOriginal && baseOriginal.receitasFixas ? JSON.parse(JSON.stringify(baseOriginal.receitasFixas)) : [],
-    receitasVariaveis: [],
-    porcentagens: baseOriginal && baseOriginal.porcentagens ? JSON.parse(JSON.stringify(baseOriginal.porcentagens)) : criarEstruturaMesPadrao().porcentagens,
-    despesas: []
-  };
+  DB_STATE.dadosAnos[ano][mes] = criarEstruturaMesPadrao();
 
   sincronizarPeriodoComFirebase();
-  alert('Período ' + mes + '/' + ano + ' preparado com sucesso! Suas receitas fixas e metas de percentuais foram herdadas.');
+  alert('Novo período preparado com sucesso!');
 }
 
-// --- RENDER DA TELA 1: CAPTAÇÃO ---
+// TELA 1: CAPTAÇÃO
 function renderCaptacao() {
   const d = getPeriodoAtual();
   const total = receitaTotal();
@@ -781,24 +715,19 @@ function renderCaptacao() {
   const rf = d.receitasFixas ? Object.values(d.receitasFixas) : [];
   const rv = d.receitasVariaveis ? Object.values(d.receitasVariaveis) : [];
   const nf = [...rf, ...rv].filter(r=>r.val>0).length;
-  document.getElementById('rt-delta').textContent = nf + ' fonte' + (nf!==1?'s':'') + ' ativas';
+  document.getElementById('rt-delta').textContent = nf + ' fonte(s) ativa(s)';
 
   function renderLista(id, sourceObj, tipo) {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
+    const el = document.getElementById(id); el.innerHTML = '';
     const arr = sourceObj ? Object.entries(sourceObj) : [];
-    
-    if (arr.length === 0) {
-      el.innerHTML = `<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma receita ${tipo} cadastrada.</p>`;
-      return;
+    if (!arr.length) {
+      el.innerHTML = `<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma cadastrada.</p>`; return;
     }
-    
     arr.forEach(([key, r]) => {
-      const div = document.createElement('div');
-      div.className = 'receita-item';
+      const div = document.createElement('div'); div.className = 'receita-item';
       div.innerHTML = `<span class="ri-name">${r.nome}</span>
-        <input type="text" value="${fmt(r.val)}" data-key="${key}" data-tipo="${tipo}" class="input-receita-dinamico" style="max-width:110px;text-align:right;font-weight:500;color:#1baf7a">
-        <button data-key="${key}" data-tipo="${tipo}" class="btn-del-receita-dinamico" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:15px;margin-left:4px"><i class='ti ti-x'></i></button>`;
+        <input type="text" value="${fmt(r.val)}" data-key="${key}" data-tipo="${tipo}" class="input-receita-dinamico">
+        <button data-key="${key}" data-tipo="${tipo}" class="btn-del-receita-dinamico" style="background:none;border:none;cursor:pointer;color:#64748b"><i class='ti ti-x'></i></button>`;
       el.appendChild(div);
     });
   }
@@ -812,85 +741,63 @@ function addReceita() {
   const tipo = document.getElementById('nova-rec-tipo').value;
   if (!nome || !val) return;
   
-  const a = DB_STATE.anoSel;
-  const m = DB_STATE.mesSel;
   const path = tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-  
-  database.ref(`dadosAnos/${a}/${m}/${path}`).push({nome, val});
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}`).push({nome, val});
   
   document.getElementById('nova-rec-nome').value='';
   document.getElementById('nova-rec-val').value='';
 }
 
-// --- RENDER DA TELA 2: ORÇAMENTO ---
+// TELA 2: ORÇAMENTO
 function renderOrcamento() {
-  const d = getPeriodoAtual();
-  const total = receitaTotal();
-  const el = document.getElementById('orcamento-list');
-  el.innerHTML = '';
+  const d = getPeriodoAtual(); const total = receitaTotal();
+  const el = document.getElementById('orcamento-list'); el.innerHTML = '';
 
   caixasConfig.forEach(cx => {
     const totalPct = cx.cats.reduce((s,c)=>s+(d.porcentagens ? (d.porcentagens[c]||0) : 0),0);
     const totalVal = total * totalPct/100;
 
-    const card = document.createElement('div');
-    card.className = 'caixa-card';
+    const card = document.createElement('div'); card.className = 'caixa-card';
     let rows = cx.cats.map(cat => {
       const pct = d.porcentagens ? (d.porcentagens[cat]||0) : 0;
       const val = total * pct/100;
-      return `<div class="caixa-row">
-        <span class="cr-name">${cat}</span>
-        <span class="cr-val">${fmt(val)} <small style="color:#64748b;font-weight:400">(${pct}%)</small></span>
-      </div>
+      return `<div class="caixa-row"><span class="cr-name">${cat}</span><span class="cr-val">${fmt(val)} <small>(${pct}%)</small></span></div>
       <div class="pct-slider">
-        <input type="range" min="0" max="40" step="1" value="${pct}" data-cat="${cat}" class="slider-orcamento-dinamico" style="accent-color:${cx.cor}">
+        <input type="range" min="0" max="40" value="${pct}" data-cat="${cat}" class="slider-orcamento-dinamico" style="accent-color:${cx.cor}">
         <span class="pct-label">${pct}% → ${fmt(val)}</span>
       </div>`;
     }).join('');
 
-    card.innerHTML = `
-      <div class="caixa-head">
-        <div>
-          <span class="tag" style="background:${cx.cor}22;color:${cx.cor}">${cx.nome}</span>
-        </div>
-        <div style="text-align:right">
-          <div class="meta">${fmt(totalVal)}</div>
-          <div class="pct">${totalPct}% da receita</div>
-        </div>
-      </div>
-      <div class="caixa-body">${rows}</div>`;
+    card.innerHTML = `<div class="caixa-head">
+        <div><span class="tag" style="background:${cx.cor}22;color:${cx.cor}">${cx.nome}</span></div>
+        <div style="text-align:right"><div class="meta">${fmt(totalVal)}</div><div class="pct">${totalPct}%</div></div>
+      </div><div class="caixa-body">${rows}</div>`;
     el.appendChild(card);
   });
 }
 
-// --- RENDER DA TELA 3: REGISTRO ---
+// TELA 3: REGISTRO
 function renderRegistro() {
-  const d = getPeriodoAtual();
-  const el = document.getElementById('list-despesas');
-  el.innerHTML = '';
-  
+  const d = getPeriodoAtual(); const el = document.getElementById('list-despesas'); el.innerHTML = '';
   const despesasArray = d.despesas ? Object.entries(d.despesas) : [];
   
   if (!despesasArray.length) {
-    el.innerHTML = '<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhuma despesa registrada neste período.</p>';
-    return;
+    el.innerHTML = '<p style="font-size:13px;color:#64748b;padding:8px 0">Nenhum lançamento feito.</p>'; return;
   }
   
   despesasArray.reverse().forEach(([key, dep]) => {
     const cor = catColors[dep.cat] || '#888';
-    const div = document.createElement('div');
-    div.className = 'desp-item';
-    
+    const div = document.createElement('div'); div.className = 'desp-item';
     const donoReal = dep.dono || 'André';
-    const classeDono = donoReal.toLowerCase().includes('andre') || donoReal === 'André' ? 'andre' : 'gessyca';
+    const classeDono = donoReal.toLowerCase().includes('andre') ? 'andre' : 'gessyca';
     
     div.innerHTML = `<div class="desp-dot" style="background:${cor}"></div>
       <div class="desp-info">
-        <div class="di-desc">${dep.desc||dep.cat} <span class="lbl-dono ${classeDono}">${donoReal}</span></div>
+        <div class="di-desc">${dep.desc} <span class="lbl-dono ${classeDono}">${donoReal}</span></div>
         <div class="di-cat">${dep.cat} ${dep.data?'· '+dep.data.split('-').reverse().slice(0,2).join('/'):''}</div>
       </div>
       <span class="desp-val">− ${fmt(dep.val)}</span>
-      <button class="desp-del btn-del-despesa-dinamico" data-key="${key}"><i class="ti ti-trash" aria-hidden="true"></i></button>`;
+      <button class="desp-del btn-del-despesa-dinamico" data-key="${key}"><i class="ti ti-trash"></i></button>`;
     el.appendChild(div);
   });
 }
@@ -902,33 +809,24 @@ function addDespesa() {
   const val = parseBr(document.getElementById('desp-val').value);
   if (!cat || !val) return;
   
-  const a = DB_STATE.anoSel;
-  const m = DB_STATE.mesSel;
-  
-  database.ref(`dadosAnos/${a}/${m}/despesas`).push({
-    data, 
-    cat, 
-    desc: desc || cat, 
-    val, 
-    dono: DB_STATE.currentUser ? DB_STATE.currentUser.nome : "André"
+  database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas`).push({
+    data, cat, desc: desc || cat, val, dono: DB_STATE.currentUser ? DB_STATE.currentUser.nome : "André"
   });
   
   document.getElementById('desp-desc').value = '';
   document.getElementById('desp-val').value = '';
 }
 
-// --- RENDER DA TELA 4: CONTROLE ---
+// TELA 4: CONTROLE (CORREÇÃO 4: BONEQUINHOS/INDIVIDUALIZADO EM AMBOS OS MODOS GASTO E INVESTIMENTO)
 function toggleControlFilter(type) {
   DB_STATE.currentControlTab = type;
   document.getElementById('btn-ctrl-gasto').classList.toggle('active', type === 'Gasto');
-  document.getElementById('btn-ctrl-inv').classList.toggle('active', type === 'Investimento');
+  document.getElementById('btn-ctrl-inv').classList.toggle('active', type === 'Investment');
   renderControle();
 }
 
 function renderControle() {
-  const d = getPeriodoAtual();
-  const total = receitaTotal();
-  
+  const d = getPeriodoAtual(); const total = receitaTotal();
   const despesasLista = d.despesas ? Object.values(d.despesas) : [];
   const gastTotalGeral = despesasLista.reduce((s,x)=>s+x.val,0);
   
@@ -937,59 +835,34 @@ function renderControle() {
 
   const cats = d.porcentagens ? Object.keys(d.porcentagens) : [];
   let ok=0, over=0;
-  cats.forEach(c => { if(d.porcentagens[c]>0){ const lim=limite(c); const real=realizado(c); if(real>lim) over++; else ok++; } });
+  cats.forEach(c => { if((d.porcentagens[c]||0)>0){ if(realizado(c)>limite(c)) over++; else ok++; } });
   document.getElementById('ctrl-ok').textContent = ok;
   document.getElementById('ctrl-over').textContent = over;
 
-  const el = document.getElementById('termometro-list');
-  el.innerHTML = '';
+  const el = document.getElementById('termometro-list'); el.innerHTML = '';
   
   cats.forEach(cat => {
-    const pct = d.porcentagens ? (d.porcentagens[cat]||0) : 0;
-    if (pct===0) return;
-    
-    const ehInvestimento = (cat === 'Reserva de Emergência' || cat === 'Investimentos' || cat === 'Patrimônio' || cat === 'Projetos');
-    const tipoCategoria = ehInvestimento ? 'Investimento' : 'Gasto';
-    
-    if (tipoCategoria !== DB_STATE.currentControlTab) return;
+    const pct = d.porcentagens ? (d.porcentagens[cat]||0) : 0; if (pct===0) return;
+    const ehInvestimento = ['Reserva de Emergência','Investimentos','Patrimônio','Projetos'].includes(cat);
+    if ((ehInvestimento ? 'Investment' : 'Gasto') !== DB_STATE.currentControlTab) return;
 
-    const lim = limite(cat);
-    const realTotal = realizado(cat);
+    const lim = limite(cat); const realTotal = realizado(cat);
+    const realAndre = despesasLista.filter(x => x.cat === cat && x.dono === 'André').reduce((s,x)=>s+x.val,0);
+    const realGessyca = despesasLista.filter(x => x.cat === cat && x.dono === 'Gessyca').reduce((s,x)=>s+x.val,0);
     
-    const realAndre = despesasLista.filter(x => x.cat === cat && (x.dono === 'André' || x.dono === 'andre')).reduce((s,x)=>s+x.val,0);
-    const realGessyca = despesasLista.filter(x => x.cat === cat && (x.dono === 'Gessyca' || x.dono === 'gessyca')).reduce((s,x)=>s+x.val,0);
-    
-    const saldo = lim - realTotal;
-    const pctBar = lim > 0 ? Math.min(100, realTotal/lim*100) : 0;
-    const isOver = saldo < 0;
-    const cor = isOver ? '#e24b4a' : (catColors[cat]||'#1baf7a');
+    const saldo = lim - realTotal; const pctBar = lim > 0 ? Math.min(100, realTotal/lim*100) : 0;
+    const isOver = saldo < 0; const cor = isOver ? '#e24b4a' : (catColors[cat]||'#1baf7a');
 
-    const item = document.createElement('div');
-    item.className = 'termo-item';
-    item.innerHTML = `
-      <div class="termo-top">
-        <span class="ti-name">${cat}</span>
-        <span class="ti-status ${isOver?'status-over':'status-ok'}">${isOver?'🔴 Estourou':'🟢 OK'}</span>
-      </div>
-      <div class="termo-bar-bg">
-        <div class="termo-bar-fill" style="width:${pctBar.toFixed(1)}%;background:${cor}"></div>
-      </div>
-      <div class="termo-vals">
-        <span>Casal: <b>${fmt(realTotal)}</b></span>
-        <span>Limite: ${fmt(lim)}</span>
-        <span style="color:${isOver?'#e24b4a':'#1baf7a'};font-weight:500">
-          ${isOver ? '− ' + fmt(Math.abs(saldo)) : '+ ' + fmt(saldo)}
-        </span>
-      </div>
-      <div class="termo-split-row">
-        <span>👨 André: <b>${fmt(realAndre)}</b></span>
-        <span>👩 Gessyca: <b>${fmt(realGessyca)}</b></span>
-      </div>`;
+    const item = document.createElement('div'); item.className = 'termo-item';
+    item.innerHTML = `<div class="termo-top"><span class="ti-name">${cat}</span><span class="ti-status ${isOver?'status-over':'status-ok'}">${isOver?'🔴 Excedeu':'🟢 OK'}</span></div>
+      <div class="termo-bar-bg"><div class="termo-bar-fill" style="width:${pctBar}%;background:${cor}"></div></div>
+      <div class="termo-vals"><span>Casal: <b>${fmt(realTotal)}</b></span><span>Meta: ${fmt(lim)}</span><span style="color:${cor};font-weight:500">${saldo<0?'-':'+'} ${fmt(Math.abs(saldo))}</span></div>
+      <div class="termo-split-row"><span>👨 André: ${fmt(realAndre)}</span><span>👩 Gessyca: ${fmt(realGessyca)}</span></div>`;
     el.appendChild(item);
   });
 }
 
-// --- RENDER DA TELA 5: PATRIMÔNIO ---
+// TELA 5: PATRIMÔNIO
 function toggleChartTotal(active) {
   DB_STATE.chartTotalActive = active;
   document.getElementById('btn-chart-total-mode').classList.toggle('active', active);
@@ -997,116 +870,60 @@ function toggleChartTotal(active) {
 }
 
 function renderPatrimonioChart() {
-  const container = document.getElementById('patr-bars-container');
-  container.innerHTML = '';
-  
+  const container = document.getElementById('patr-bars-container'); container.innerHTML = '';
   const ano = document.getElementById('patr-chart-date').value;
   let pontos = DB_STATE.patrimonioHistorico[ano] ? Object.values(DB_STATE.patrimonioHistorico[ano]) : [];
   
-  if (DB_STATE.chartTotalActive) {
-    pontos = [ 
-      {m: "Hist. 24", v: 0}, {m: "Hist. 25", v: 0}, {m: "Atual 26", v: 0}, {m: "Proj. 28", v: 0}, {m: "Proj. 30", v: 0} 
-    ];
-  }
-  
-  if (pontos.length === 0) {
-    container.innerHTML = '<p style="font-size:12px;color:#64748b;align-self:center;margin:auto">Nenhum dado patrimonial cadastrado para este período.</p>';
-    return;
+  if (!pontos.length) {
+    container.innerHTML = '<p style="font-size:12px;color:#64748b;margin:auto">Nenhum histórico cadastrado.</p>'; return;
   }
 
   const maximo = Math.max(...pontos.map(p=>p.v), 1);
-  
   pontos.forEach(p => {
-    const alturaPct = (p.v / maximo) * 100;
-    const col = document.createElement('div');
-    col.className = 'chart-column';
-    col.style.cursor = DB_STATE.chartTotalActive ? 'pointer' : 'default';
-    
-    const corBarra = DB_STATE.chartTotalActive && p.m.includes("Proj") ? "#0f6e56" : "#1baf7a";
-    
-    col.innerHTML = `
-      <div class="chart-column-val">${Math.round(p.v/1000)}k</div>
-      <div class="chart-bar-fill" style="height:${alturaPct}%; background:${corBarra};"></div>
-      <div class="chart-column-label">${p.m}</div>
-    `;
-    
-    if(DB_STATE.chartTotalActive) {
-      col.addEventListener('click', () => toggleChartTotal(false));
-    }
-    
+    const col = document.createElement('div'); col.className = 'chart-column';
+    col.innerHTML = `<div class="chart-column-val">${Math.round(p.v/1000)}k</div>
+      <div class="chart-bar-fill" style="height:${(p.v/maximo)*100}%; background:#1baf7a"></div>
+      <div class="chart-column-label">${p.m}</div>`;
     container.appendChild(col);
   });
 }
 
 function renderPatrimonio() {
   renderPatrimonioChart();
-
   const ativosLista = DB_STATE.ativos ? Object.values(DB_STATE.ativos) : [];
   const projetosLista = DB_STATE.projetos ? Object.values(DB_STATE.projetos) : [];
 
-  const totalAtivos = ativosLista.reduce((s,a) => s+a.val, 0);
-  const totalPassivos = 0; 
-  const patrimonioLiquido = totalAtivos - totalPassivos;
-
-  document.getElementById('patr-liq').textContent = fmt(patrimonioLiquido);
+  const totalAtivos = ativosLista.reduce((s,a)=>s+a.val, 0);
+  document.getElementById('patr-liq').textContent = fmt(totalAtivos);
   document.getElementById('patr-ativos').textContent = fmt(totalAtivos);
-  document.getElementById('patr-passivos').textContent = fmt(totalPassivos);
 
-  const atEl = document.getElementById('list-ativos');
-  atEl.innerHTML = AtivosLista.length === 0 ? '<p style="font-size:13px;color:#64748b;padding:8px 14px">Nenhuma caixa patrimonial criada.</p>' : '';
-  
+  const atEl = document.getElementById('list-ativos'); atEl.innerHTML = '';
   ativosLista.forEach(a => {
-    const div = document.createElement('div');
-    div.className = 'ativo-item';
-    div.innerHTML = `<div>
-      <div class="ai-name" style="display:flex;align-items:center;gap:6px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${a.cor};flex-shrink:0"></span>${a.nome}</div>
-      <div class="ai-sub">${a.sub}</div>
-    </div>
-    <div style="text-align:right">
-      <div class="ai-val">${fmt(a.val)}</div>
-      <div class="ai-rend">${a.rend}</div>
-    </div>`;
+    const div = document.createElement('div'); div.className = 'ativo-item';
+    div.innerHTML = `<div><div class="ai-name"><span style="background:${a.cor};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px"></span>${a.nome}</div><div class="ai-sub">${a.sub}</div></div>
+    <div style="text-align:right"><div class="ai-val">${fmt(a.val)}</div><div class="ai-rend">${a.rend}</div></div>`;
     atEl.appendChild(div);
   });
 
-  const prEl = document.getElementById('list-projetos');
-  prEl.innerHTML = projetosLista.length === 0 ? '<p style="font-size:13px;color:#64748b;padding:8px 14px">Nenhum projeto ou meta listado.</p>' : '';
-  
+  const prEl = document.getElementById('list-projetos'); prEl.innerHTML = '';
   projetosLista.forEach(p => {
     const pct = Math.min(100,(p.atual/p.meta*100));
-    const div = document.createElement('div');
-    div.className = 'proj-card';
-    div.innerHTML = `
-      <div class="pc-head">
-        <span class="pc-name">${p.nome}</span>
-        <span class="pc-pct" style="color:${p.cor}">${pct.toFixed(1)}%</span>
-      </div>
-      <div class="proj-bar-bg">
-        <div class="proj-bar-fill" style="width:${pct.toFixed(1)}%;background:${p.cor}"></div>
-      </div>
-      <div class="proj-vals">
-        <span>${fmt(p.atual)} acumulado</span>
-        <span>Meta: ${fmt(p.meta)}</span>
-      </div>`;
+    const div = document.createElement('div'); div.className = 'proj-card';
+    div.innerHTML = `<div class="pc-head"><span class="pc-name">${p.nome}</span><span class="pc-pct" style="color:${p.cor}">${pct.toFixed(1)}%</span></div>
+      <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:${pct}%;background:${p.cor}"></div></div>
+      <div class="proj-vals"><span>${fmt(p.atual)} acum.</span><span>Alvo: ${fmt(p.meta)}</span></div>`;
     prEl.appendChild(div);
   });
 }
 
 // ==========================================
-// CENTRAL DE MAPEAMENTO DE EVENTOS
+// MAIS EVENTOS E INICIALIZADORES DOS TRIGGERS
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('btn-do-login').addEventListener('click', handleLogin);
   document.getElementById('btn-do-register').addEventListener('click', handleRegister);
-  document.getElementById('btn-go-to-register').addEventListener('click', () => {
-    document.getElementById('login-error-msg').style.display = 'none';
-    showScreen('screen-register');
-  });
-  document.getElementById('btn-go-to-login').addEventListener('click', () => {
-    document.getElementById('register-error-msg').style.display = 'none';
-    showScreen('screen-login');
-  });
+  document.getElementById('btn-go-to-register').addEventListener('click', () => showScreen('screen-register'));
+  document.getElementById('btn-go-to-login').addEventListener('click', () => showScreen('screen-login'));
   document.getElementById('btn-trigger-logout').addEventListener('click', handleLogout);
 
   document.getElementById('ano-select').addEventListener('change', trocarPeriodo);
@@ -1117,70 +934,43 @@ document.addEventListener("DOMContentLoaded", () => {
   
   document.getElementById('tab-captacao').addEventListener('blur', (e) => {
     if (e.target && e.target.classList.contains('input-receita-dinamico')) {
-      const a = DB_STATE.anoSel;
-      const m = DB_STATE.mesSel;
-      const key = e.target.dataset.key;
-      const tipo = e.target.dataset.tipo;
+      const key = e.target.dataset.key; const tipo = e.target.dataset.tipo;
       const path = tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-      
-      const novoValor = parseBr(e.target.value);
-      database.ref(`dadosAnos/${a}/${m}/${path}/${key}/val`).set(novoValor);
+      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}/${key}/val`).set(parseBr(e.target.value));
     }
   }, true);
 
   document.getElementById('tab-captacao').addEventListener('click', (e) => {
-    const targetBtn = e.target.closest('.btn-del-receita-dinamico');
-    if (targetBtn) {
-      const key = targetBtn.dataset.key;
-      const tipo = targetBtn.dataset.tipo;
-      const a = DB_STATE.anoSel;
-      const m = DB_STATE.mesSel;
-      const path = tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
-      
-      database.ref(`dadosAnos/${a}/${m}/${path}/${key}`).remove();
+    const btn = e.target.closest('.btn-del-receita-dinamico');
+    if (btn) {
+      const path = btn.dataset.tipo === 'fixa' ? 'receitasFixas' : 'receitasVariaveis';
+      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/${path}/${btn.dataset.key}`).remove();
     }
   });
 
   document.getElementById('tab-orcamento').addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('slider-orcamento-dinamico')) {
-      const cat = e.target.dataset.cat;
-      const val = parseInt(e.target.value);
-      const a = DB_STATE.anoSel;
-      const m = DB_STATE.mesSel;
-      
-      database.ref(`dadosAnos/${a}/${m}/porcentagens/${cat}`).set(val);
-      
-      const v = receitaTotal() * val / 100;
-      e.target.parentElement.querySelector('.pct-label').textContent = val + '% → ' + fmt(v);
+      const cat = e.target.dataset.cat; const val = parseInt(e.target.value);
+      database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/porcentagens/${cat}`).set(val);
     }
   });
 
   document.getElementById('btn-add-desp-submit').addEventListener('click', addDespesa);
   document.getElementById('tab-registro').addEventListener('click', (e) => {
     const btn = e.target.closest('.btn-del-despesa-dinamico');
-    if(btn) {
-      const key = btn.dataset.key;
-      const a = DB_STATE.anoSel;
-      const m = DB_STATE.mesSel;
-      database.ref(`dadosAnos/${a}/${m}/despesas/${key}`).remove();
-    }
+    if(btn) database.ref(`dadosAnos/${DB_STATE.anoSel}/${DB_STATE.mesSel}/despesas/${btn.dataset.key}`).remove();
   });
 
   document.getElementById('btn-ctrl-gasto').addEventListener('click', () => toggleControlFilter('Gasto'));
-  document.getElementById('btn-ctrl-inv').addEventListener('click', () => toggleControlFilter('Investimento'));
-
+  document.getElementById('btn-ctrl-inv').addEventListener('click', () => toggleControlFilter('Investment'));
   document.getElementById('patr-chart-date').addEventListener('change', renderPatrimonioChart);
   document.getElementById('btn-chart-total-mode').addEventListener('click', () => toggleChartTotal(true));
 
   document.getElementById('bottom-navigation-bar').addEventListener('click', (e) => {
     const item = e.target.closest('.nav-item');
-    if (item) {
-      switchTab(item.dataset.tab, item);
-    }
+    if (item) switchTab(item.dataset.tab, item);
   });
 
-  document.getElementById('ano-select').value = "2026";
-  document.getElementById('mes-select').value = "Maio";
   trocarPeriodo();
 });
 </script>
