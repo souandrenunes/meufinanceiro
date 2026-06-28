@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu Financeiro — Aplicativo de Controle Financeiro Pessoal</title>
+<title>Meu Financeiro — Aplicativo de Controle Financeiro Pessoal (v0.13)</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' stroke-width='2' stroke='%231baf7a' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2z' /%3E%3Cpath d='M13 17v-10l-3.5 2' /%3E%3Cpath d='M14 12h-3.5' /%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -251,7 +251,7 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
           <option value="Novembro">Novembro</option>
           <option value="Dezembro">Dezembro</option>
         </select>
-        <button class="btn-new-mes" id="btn-trigger-new-mes" title="Criar ou herdar período"><i class="ti ti-plus"></i></button>
+        <button class="btn-new-mes" id="btn-trigger-new-mes" title="Criar ou herdar período do mês anterior"><i class="ti ti-copy"></i></button>
       </div>
       <button class="btn-logout" id="btn-trigger-logout"><i class="ti ti-logout"></i></button>
     </div>
@@ -368,9 +368,10 @@ body { font-family: var(--font-sans, system-ui, sans-serif); background: #f4f6f8
           <div class="ph-label">Patrimônio Líquido Atual</div>
           <div class="ph-val" id="patr-liq">R$ 0,00</div>
           <div class="ph-row">
-            <span>Base Histórica: <strong id="patr-base">R$ 0,00</strong></span>
+            <span>Base Histórica: <strong id="patr-base" style="cursor:pointer; text-decoration: underline dashed #64748b;" title="Clique para editar valor base">R$ 0,00</strong></span>
             <span>Aportes do Mês: <strong id="patr-aportes" style="color:#1baf7a">R$ 0,00</strong></span>
           </div>
+          <button id="btn-salvar-patr-historico" style="margin-top:12px; width:100%; padding:9px; background:#1baf7a; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer;"><i class="ti ti-device-floppy"></i> Consolidar Mês no Histórico Gráfico</button>
         </div>
         <div class="patr-chart-controls">
           <select id="patr-chart-date">
@@ -463,6 +464,8 @@ const mesesMap = {
   'Janeiro':'01','Fevereiro':'02','Março':'03','Abril':'04','Maio':'05','Junho':'06',
   'Julho':'07','Agosto':'08','Setembro':'09','Outubro':'10','Novembro':'11','Dezembro':'12'
 };
+
+const ordemMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
 function sincronizarDataFormulario() {
   const mNum = mesesMap[DB_STATE.mesSel] || '05';
@@ -607,18 +610,44 @@ function trocarPeriodo() {
 }
 
 function inicializarNovoPeriodo() {
-  const ano = DB_STATE.anoSel; const mes = DB_STATE.mesSel;
-  const novaEstrutura = {
-    receitasFixas: {}, receitasVariaveis: {}, despesas: {},
-    porcentagens: {
-      'Reserva de Emergência': 9, 'Renda Fixa': 5, 'Ações': 3, 'Patrimônio': 5, 'Projetos': 5,
-      'Moradia': 20, 'Contas fixas': 5, 'Alimentação Básica': 11, 'Transporte Essencial': 4,
-      'Saúde': 2, 'Educação': 3, 'Financiamento do Carro': 8, 'Lazer': 10, 'Compras': 10, 'Despesas Extra': 0
-    }
+  const ano = DB_STATE.anoSel; 
+  const mes = DB_STATE.mesSel;
+  
+  let idx = ordemMeses.indexOf(mes);
+  let anoAnt = ano;
+  let mesAnt = '';
+  if (idx === 0) {
+    anoAnt = String(parseInt(ano) - 1);
+    mesAnt = ordemMeses[11];
+  } else {
+    mesAnt = ordemMeses[idx - 1];
+  }
+
+  let porcentagensEstrutura = {
+    'Reserva de Emergência': 9, 'Renda Fixa': 5, 'Ações': 3, 'Patrimônio': 5, 'Projetos': 5,
+    'Moradia': 20, 'Contas fixas': 5, 'Alimentação Básica': 11, 'Transporte Essencial': 4,
+    'Saúde': 2, 'Educação': 3, 'Financiamento do Carro': 8, 'Lazer': 10, 'Compras': 10, 'Despesas Extra': 0
   };
-  database.ref(`dadosAnos/${ano}/${mes}`).set(novaEstrutura).then(() => { 
-    alert(`Período ${mes}/${ano} inicializado com os percentuais padrão da planilha!`); 
-  });
+  let receitasFixasHerdadas = {};
+
+  if (DB_STATE.dadosAnos[anoAnt] && DB_STATE.dadosAnos[anoAnt][mesAnt]) {
+    const pAnt = DB_STATE.dadosAnos[anoAnt][mesAnt];
+    if (pAnt.porcentagens) porcentagensEstrutura = { ...pAnt.porcentagens };
+    if (pAnt.receitasFixas) receitasFixasHerdadas = { ...pAnt.receitasFixas };
+  }
+
+  const novaEstrutura = {
+    receitasFixas: receitasFixasHerdadas,
+    receitasVariaveis: {},
+    despesas: {},
+    porcentagens: porcentagensEstrutura
+  };
+
+  if (confirm(`Deseja inicializar o período ${mes}/${ano}? Ele herdará automaticamente as receitas fixas e a configuração de percentuais do mês anterior (${mesAnt}/${anoAnt}).`)) {
+    database.ref(`dadosAnos/${ano}/${mes}`).set(novaEstrutura).then(() => { 
+      alert(`Período ${mes}/${ano} estruturado e herdado com sucesso!`); 
+    });
+  }
 }
 
 function renderCaptacao() {
@@ -763,14 +792,19 @@ function renderPatrimonioChart() {
     Object.keys(DB_STATE.patrimonioHistorico).sort().forEach(ano => {
       const mesesDoAno = DB_STATE.patrimonioHistorico[ano];
       if (mesesDoAno) {
-        Object.keys(mesesDoAno).forEach(mes => {
-          pontos.push(mesesDoAno[mes]);
+        Object.keys(mesesDoAno).sort().forEach(subKey => {
+          pontos.push(mesesDoAno[subKey]);
         });
       }
     });
   } else {
     const ano = document.getElementById('patr-chart-date').value;
-    pontos = DB_STATE.patrimonioHistorico[ano] ? Object.values(DB_STATE.patrimonioHistorico[ano]) : [];
+    const mesesDoAno = DB_STATE.patrimonioHistorico[ano];
+    if (mesesDoAno) {
+      Object.keys(mesesDoAno).sort().forEach(subKey => {
+        pontos.push(mesesDoAno[subKey]);
+      });
+    }
   }
 
   if (!pontos.length) {
@@ -787,6 +821,24 @@ function renderPatrimonioChart() {
       <div class="chart-bar-fill" style="height:${hPct}%;"></div>
       <div class="chart-column-label">${p.m}</div>`;
     container.appendChild(col);
+  });
+}
+
+function consolidarPatrimonioNoHistorico() {
+  const d = getPeriodoAtual();
+  const despesasLista = d.despesas ? Object.values(d.despesas) : [];
+  const totalAportesMes = despesasLista.filter(x => investimentoCats.includes(x.cat)).reduce((s,x)=>s+(parseFloat(x.val)||0), 0);
+  const patrimonioLiquidoCalculado = DB_STATE.patrimonioBase + totalAportesMes;
+  
+  const ano = DB_STATE.anoSel;
+  const mes = DB_STATE.mesSel;
+  const mNum = mesesMap[mes] || '01';
+
+  database.ref(`patrimonioHistorico/${ano}/${mNum}_${mes}`).set({
+    m: mes.substring(0,3),
+    v: patrimonioLiquidoCalculado
+  }).then(() => {
+    alert(`Patrimônio de ${mes}/${ano} (${fmt(patrimonioLiquidoCalculado)}) consolidado no gráfico histórico com sucesso!`);
   });
 }
 
@@ -858,6 +910,19 @@ document.getElementById('btn-ctrl-gasto').addEventListener('click', () => toggle
 document.getElementById('btn-ctrl-inv').addEventListener('click', () => toggleControlFilter('Investimento'));
 document.getElementById('patr-chart-date').addEventListener('change', renderPatrimonioChart);
 document.getElementById('btn-chart-total-mode').addEventListener('click', toggleChartTotal);
+document.getElementById('btn-salvar-patr-historico').addEventListener('click', consolidarPatrimonioNoHistorico);
+
+document.getElementById('patr-base').addEventListener('click', () => {
+  const novoBase = prompt("Digite o novo valor para o Patrimônio Base Histórico (Apenas números, sem pontos ou vírgulas):", DB_STATE.patrimonioBase);
+  if (novoBase !== null) {
+    const valorConvertido = parseFloat(novoBase);
+    if (!isNaN(valorConvertido)) {
+      database.ref('patrimonioBase').set(valorConvertido);
+    } else {
+      alert("Valor inválido inserido!");
+    }
+  }
+});
 
 document.getElementById('bottom-navigation-bar').addEventListener('click', (e) => {
   const item = e.target.closest('.nav-item');
