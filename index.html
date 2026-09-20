@@ -1530,7 +1530,7 @@ function renderControle() {
       const item = document.createElement('div'); item.className = 'termo-item';
       item.innerHTML = `<div class="termo-top"><span class="ti-name">${cat}</span><span class="ti-status ${saldo<0?'status-over':'status-ok'}">${saldo<0?'🔴 Excedido':'🟢 Sob Controle'}</span></div>
         <div class="termo-bar-bg"><div class="termo-bar-fill" style="width:${pctBar}%;background:${saldo<0?'#e24b4a':catColors[cat]}"></div></div>
-        <div class="termo-vals"><span>Realizado: <strong style="color:${mode==='Gasto'?'#e24b4a':'#0f6e56'}">${realExibido}</strong> / ${fmt(lim)}</span><span>Restam: <strong>${fmt(Math.abs(saldo))}</strong></span></div>
+        <div class="termo-vals"><span>Realizado: <strong style="color:${mode==='Gasto'?'#e24b4a':'#0f6e56'}">${realExibido}</strong> / ${fmt(lim)}</span><span> <strong>${fmt(Math.abs(saldo))}</strong></span></div>
         <div class="termo-split-row"><span>👨 André: ${fmt(realAndre)}</span><span>👩 Gessyca: ${fmt(realGessyca)}</span></div>`;
       el.appendChild(item);
     }
